@@ -1,0 +1,60 @@
+@using ZaffreMeld.Web.Models.Inventory
+@{ ViewData["Title"] = "Bill of Materials"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-diagram-3 me-2 text-primary"></i>Bill of Materials</h4>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-4">
+        <label class="form-label small mb-1">Parent Item</label>
+        <select name="parent" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">-- Select Parent Item --</option>
+            @foreach (var item in (ViewBag.Items as System.Collections.IEnumerable ?? Array.Empty<object>()))
+            {
+                var it = (dynamic)item;
+                <option value="@it.ItItem" selected="@(ViewBag.ParentItem != null && ((ItemMstr)ViewBag.ParentItem).ItItem == (string)it.ItItem)">@it.ItItem — @it.ItDesc</option>
+            }
+        </select>
+    </div>
+</form>
+</div></div>
+@if (ViewBag.ParentItem is ItemMstr parent)
+{
+    <div class="form-section mb-3">
+        <div class="form-section-title">Parent Item</div>
+        <div class="d-flex align-items-center gap-3">
+            <div><span class="detail-label">Item #</span><div class="detail-value">@parent.ItItem</div></div>
+            <div><span class="detail-label">Description</span><div>@parent.ItDesc</div></div>
+            <div><span class="detail-label">UOM</span><div>@parent.ItUom</div></div>
+            <div><span class="detail-label">Type</span><div>@(parent.ItType=="M"?"Manufactured":parent.ItType=="P"?"Purchased":"Service")</div></div>
+            <a asp-action="Item" asp-route-id="@parent.ItItem" class="btn btn-xs btn-outline-secondary ms-auto">View Item</a>
+        </div>
+    </div>
+    <div class="browse-table-wrapper">
+        <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">COMPONENTS</span></div>
+        <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>Seq</th><th>Component</th><th class="num">Qty Per</th><th>UOM</th><th>Eff From</th><th>Eff Thru</th><th>Type</th><th>Active</th></tr></thead>
+            <tbody>
+            @foreach (PbmMstr bom in (ViewBag.Lines as IEnumerable<PbmMstr> ?? Array.Empty<PbmMstr>()))
+            {
+                <tr>
+                    <td>@bom.PsSeq</td>
+                    <td><a asp-action="Item" asp-route-id="@bom.PsChild">@bom.PsChild</a></td>
+                    <td class="num">@bom.PsQty.ToString("N4")</td>
+                    <td>@bom.PsUom</td>
+                    <td>@bom.PsEfffrom</td>
+                    <td>@bom.PsEffthru</td>
+                    <td>@bom.PsType</td>
+                    <td><span class="badge @(bom.PsActive?"badge-active":"badge-inactive")">@(bom.PsActive?"Yes":"No")</span></td>
+                </tr>
+            }
+            @if (!(ViewBag.Lines as IEnumerable<PbmMstr> ?? Array.Empty<PbmMstr>()).Any())
+            { <tr><td colspan="8" class="text-center text-muted py-4">No components defined</td></tr> }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center text-muted py-5"><i class="bi bi-diagram-3 fs-1 d-block mb-2"></i>Select a parent item to view its bill of materials</div>
+}

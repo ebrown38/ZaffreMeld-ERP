@@ -1,0 +1,32 @@
+@using ZaffreMeld.Web.Models.Administration
+@{ ViewData["Title"] = "Code Tables"; }
+<div class="page-header"><h4><i class="bi bi-list-check me-2 text-primary"></i>Code Tables</h4></div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-3">
+        <label class="form-label small mb-1">Code Type</label>
+        <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">All Types</option>
+            @foreach (string t in (ViewBag.Types as IEnumerable<string> ?? Array.Empty<string>()))
+            { <option value="@t" selected="@(ViewBag.SelectedType==(string)t)">@t</option> }
+        </select>
+    </div>
+</form>
+</div></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>Code</th><th>Key</th><th>Value</th><th>Description</th><th>Active</th></tr></thead>
+    <tbody>
+    @foreach (CodeMstr c in (ViewBag.Codes as IEnumerable<CodeMstr> ?? Array.Empty<CodeMstr>()))
+    {
+        <tr>
+            <td class="fw-semibold">@c.CodeCode</td>
+            <td>@c.CodeKey</td>
+            <td>@c.CodeValue</td>
+            <td>@c.CodeDesc</td>
+            <td><span class="badge @(c.CodeActive=="1"?"badge-active":"badge-inactive")">@(c.CodeActive=="1"?"Active":"Inactive")</span></td>
+        </tr>
+    }
+    @if (!(ViewBag.Codes as IEnumerable<CodeMstr> ?? Array.Empty<CodeMstr>()).Any())
+    { <tr><td colspan="5" class="text-center text-muted py-4">No codes found</td></tr> }
+    </tbody>
+</table></div>

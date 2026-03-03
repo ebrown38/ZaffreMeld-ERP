@@ -1,0 +1,61 @@
+@using ZaffreMeld.Web.Models.Shipping
+@using ZaffreMeld.Web.Models.Orders
+@model ShipMstr
+@{ ViewData["Title"] = $"Shipper {Model.ShId}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Shippers" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-truck me-2 text-primary"></i>Shipper @Model.ShId</h4>
+        <span class="badge ms-2 @(Model.ShStatus=="O"?"badge-open":"badge-closed")">@(Model.ShStatus=="O"?"Open":"Shipped")</span>
+    </div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Shipment Details</div>
+        <div class="row g-2">
+            <div class="col-6"><span class="detail-label">Shipper #</span><div class="detail-value">@Model.ShId</div></div>
+            <div class="col-6"><span class="detail-label">Sales Order</span>
+                <div><a asp-controller="Orders" asp-action="SalesOrder" asp-route-id="@Model.ShSo">@Model.ShSo</a></div></div>
+            <div class="col-6"><span class="detail-label">Entry Date</span><div>@Model.ShEntdate</div></div>
+            <div class="col-6"><span class="detail-label">Ship Date</span><div>@Model.ShShipdate</div></div>
+            <div class="col-6"><span class="detail-label">Carrier</span><div>@Model.ShCarrier</div></div>
+            <div class="col-6"><span class="detail-label">Track #</span><div>@Model.ShTrackno</div></div>
+            <div class="col-6"><span class="detail-label">Weight (lbs)</span><div>@Model.ShWeight.ToString("N2")</div></div>
+            <div class="col-6"><span class="detail-label">Freight</span><div>@Model.ShFreightamt.ToString("N2")</div></div>
+            <div class="col-6"><span class="detail-label">Pallets</span><div>@Model.ShPallets</div></div>
+            <div class="col-6"><span class="detail-label">Posted</span><div>@(Model.ShPosted?"Yes":"No")</div></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Ship-To</div>
+        @if (ViewBag.Customer is CmMstr c)
+        {
+            <div class="fw-semibold">@c.CmName</div>
+            <div class="text-muted small">@c.CmCode</div>
+            <div>@c.CmLine1</div>
+            <div>@c.CmCity, @c.CmState @c.CmZip</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.ShNote))
+        { <div class="mt-2 pt-2 border-top"><span class="detail-label">Notes</span><div class="small">@Model.ShNote</div></div> }
+    </div></div>
+</div>
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">SHIPPED LINES</span></div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Line</th><th>Item</th><th>SO #</th><th>SO Line</th><th class="num">Qty</th><th>UOM</th><th>Lot</th><th>Serial</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach (ShipDet line in (ViewBag.Lines as IEnumerable<ShipDet> ?? Array.Empty<ShipDet>()))
+        {
+            <tr>
+                <td>@line.ShdLine</td>
+                <td><a asp-controller="Inventory" asp-action="Item" asp-route-id="@line.ShdItem">@line.ShdItem</a></td>
+                <td>@line.ShdSo</td><td>@line.ShdSoline</td>
+                <td class="num">@line.ShdQty.ToString("N2")</td>
+                <td>@line.ShdUom</td>
+                <td>@line.ShdLot</td><td>@line.ShdSerial</td>
+                <td><span class="badge @(line.ShdStatus=="O"?"badge-open":"badge-closed")">@line.ShdStatus</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

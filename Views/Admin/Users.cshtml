@@ -1,0 +1,21 @@
+@{ ViewData["Title"] = "Users"; }
+<div class="page-header"><h4><i class="bi bi-person-lock me-2 text-primary"></i>System Users</h4></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>User ID</th><th>Name</th><th>Site</th><th>Type</th><th>Email</th><th>Active</th><th>Last Login</th></tr></thead>
+    <tbody>
+    @foreach (ZaffreMeldUser u in (ViewBag.Users as IEnumerable<ZaffreMeldUser> ?? Array.Empty<ZaffreMeldUser>()))
+    {
+        <tr>
+            <td class="fw-semibold">@u.UserId</td>
+            <td>@u.FirstName @u.LastName</td>
+            <td>@u.UserSite</td>
+            <td><span class="badge bg-light text-dark border small">@u.UserType</span></td>
+            <td>@u.Email</td>
+            <td><span class="badge @(u.IsActive?"badge-active":"badge-inactive")">@(u.IsActive?"Active":"Inactive")</span></td>
+            <td>@u.LastLogin?.ToString("yyyy-MM-dd HH:mm")</td>
+        </tr>
+    }
+    @if (!(ViewBag.Users as IEnumerable<ZaffreMeldUser> ?? Array.Empty<ZaffreMeldUser>()).Any())
+    { <tr><td colspan="7" class="text-center text-muted py-4">No users found</td></tr> }
+    </tbody>
+</table></div>

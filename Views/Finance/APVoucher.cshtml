@@ -1,0 +1,52 @@
+@model ApMstr
+@{ ViewData["Title"] = $"Voucher {Model.ApId}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="AP" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-credit-card me-2 text-primary"></i>Voucher @Model.ApId</h4>
+        <span class="badge ms-2 @(Model.ApStatus=="O"?"badge-open":"badge-closed")">@(Model.ApStatus=="O"?"Open":"Closed")</span>
+    </div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Voucher Details</div>
+        <div class="row g-2">
+            <div class="col-6"><span class="detail-label">Voucher #</span><div class="detail-value">@Model.ApId</div></div>
+            <div class="col-6"><span class="detail-label">Vendor Ref</span><div>@Model.ApRef</div></div>
+            <div class="col-6"><span class="detail-label">Entry Date</span><div>@Model.ApEntdate</div></div>
+            <div class="col-6"><span class="detail-label">Due Date</span><div>@Model.ApDuedate</div></div>
+            <div class="col-6"><span class="detail-label">Amount</span><div class="fw-bold text-primary">@Model.ApAmt.ToString("N2") @Model.ApCurr</div></div>
+            <div class="col-6"><span class="detail-label">Posted</span><div>@(Model.ApPosted?"Yes":"No")</div></div>
+            <div class="col-12"><span class="detail-label">Description</span><div>@Model.ApDesc</div></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Vendor</div>
+        @if (ViewBag.Vendor is VdMstr v)
+        {
+            <div class="fw-semibold">@v.VdName</div>
+            <div class="text-muted small">@v.VdAddr</div>
+            <div>@v.VdLine1</div>
+            <div>@v.VdCity, @v.VdState @v.VdZip</div>
+        }
+        <a asp-controller="Purchasing" asp-action="Vendor" asp-route-id="@Model.ApVend" class="btn btn-xs btn-outline-secondary mt-2">View Vendor</a>
+    </div></div>
+</div>
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">DISTRIBUTION LINES</span></div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Account</th><th>CC</th><th>PO #</th><th>PO Line</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+        @foreach (ApdMstr line in (ViewBag.Lines as IEnumerable<ApdMstr> ?? Array.Empty<ApdMstr>()))
+        {
+            <tr>
+                <td><a asp-controller="Finance" asp-action="Account" asp-route-id="@line.ApdAcct">@line.ApdAcct</a></td>
+                <td>@line.ApdCc</td>
+                <td>@line.ApdNbr</td>
+                <td>@line.ApdLine</td>
+                <td class="num">@line.ApdAmt.ToString("N2")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

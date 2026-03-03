@@ -1,0 +1,94 @@
+@using ZaffreMeld.Web.Models.Orders
+@model CmMstr
+@{ ViewData["Title"] = Model.CmName; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Customers" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-person-circle me-2 text-primary"></i>@Model.CmName</h4>
+        <span class="badge ms-2 @(Model.CmStatus=="A"?"badge-active":"badge-inactive")">@(Model.CmStatus=="A"?"Active":"Inactive")</span>
+    </div>
+    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal">
+        <i class="bi bi-pencil me-1"></i>Edit
+    </button>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-5">
+        <div class="form-section">
+            <div class="form-section-title">Contact & Address</div>
+            <div class="mb-1"><span class="detail-label">Code</span><div class="detail-value">@Model.CmCode</div></div>
+            <div class="mb-1"><span class="detail-label">Address</span><div>@Model.CmLine1 @Model.CmLine2</div><div>@Model.CmCity, @Model.CmState @Model.CmZip</div><div>@Model.CmCountry</div></div>
+            <div class="mb-1"><span class="detail-label">Phone</span><div>@Model.CmPhone</div></div>
+            <div class="mb-1"><span class="detail-label">Email</span><div>@Model.CmEmail</div></div>
+            <div class="mb-1"><span class="detail-label">Contact</span><div>@Model.CmContact</div></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-section">
+            <div class="form-section-title">Account Settings</div>
+            <div class="mb-1"><span class="detail-label">Terms</span><div class="detail-value">@Model.CmTerms</div></div>
+            <div class="mb-1"><span class="detail-label">Currency</span><div>@Model.CmCurrency</div></div>
+            <div class="mb-1"><span class="detail-label">Tax Code</span><div>@Model.CmTaxcode</div></div>
+            <div class="mb-1"><span class="detail-label">Credit Limit</span><div>@Model.CmCreditlimit.ToString("N2")</div></div>
+            <div class="mb-1"><span class="detail-label">GL Account</span><div>@Model.CmAcct / @Model.CmCc</div></div>
+            <div class="mb-1"><span class="detail-label">Salesperson</span><div>@Model.CmSlsp</div></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-section">
+            <div class="form-section-title">Quick Actions</div>
+            <a asp-action="NewSalesOrder" class="btn btn-sm btn-primary w-100 mb-2"><i class="bi bi-cart-plus me-1"></i>New Sales Order</a>
+            <a asp-action="SalesOrders" asp-route-cust="@Model.CmCode" class="btn btn-sm btn-outline-secondary w-100">View All Orders</a>
+        </div>
+    </div>
+</div>
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">RECENT ORDERS</span></div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Order #</th><th>Entry Date</th><th>Req Date</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (SoMstr so in (ViewBag.RecentOrders as IEnumerable<SoMstr> ?? Array.Empty<SoMstr>()))
+        {
+            <tr>
+                <td><a asp-action="SalesOrder" asp-route-id="@so.SoNbr">@so.SoNbr</a></td>
+                <td>@so.SoEntdate</td><td>@so.SoReqdate</td>
+                <td class="num">@so.SoTotalamt.ToString("N2")</td>
+                <td><span class="badge @(so.SoStatus=="O"?"badge-open":"badge-closed")">@so.SoStatus</span></td>
+                <td><a asp-action="SalesOrder" asp-route-id="@so.SoNbr" class="btn btn-xs btn-outline-secondary">View</a></td>
+            </tr>
+        }
+        @if (!(ViewBag.RecentOrders as IEnumerable<SoMstr> ?? Array.Empty<SoMstr>()).Any())
+        { <tr><td colspan="6" class="text-center text-muted py-3">No orders</td></tr> }
+        </tbody>
+    </table>
+</div>
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Edit Customer</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <form method="post" asp-action="EditCustomer" asp-route-id="@Model.CmCode">
+    <div class="modal-body"><div class="row g-2">
+        <div class="col-6"><label class="form-label small">Name</label><input name="CmName" class="form-control form-control-sm" value="@Model.CmName"/></div>
+        <div class="col-3"><label class="form-label small">Status</label>
+            <select name="CmStatus" class="form-select form-select-sm">
+                <option value="A" selected="@(Model.CmStatus=="A")">Active</option>
+                <option value="I" selected="@(Model.CmStatus=="I")">Inactive</option>
+            </select></div>
+        <div class="col-3"><label class="form-label small">Currency</label><input name="CmCurrency" class="form-control form-control-sm" value="@Model.CmCurrency"/></div>
+        <div class="col-6"><label class="form-label small">Address Line 1</label><input name="CmLine1" class="form-control form-control-sm" value="@Model.CmLine1"/></div>
+        <div class="col-6"><label class="form-label small">Address Line 2</label><input name="CmLine2" class="form-control form-control-sm" value="@Model.CmLine2"/></div>
+        <div class="col-4"><label class="form-label small">City</label><input name="CmCity" class="form-control form-control-sm" value="@Model.CmCity"/></div>
+        <div class="col-2"><label class="form-label small">State</label><input name="CmState" class="form-control form-control-sm" value="@Model.CmState"/></div>
+        <div class="col-3"><label class="form-label small">Zip</label><input name="CmZip" class="form-control form-control-sm" value="@Model.CmZip"/></div>
+        <div class="col-3"><label class="form-label small">Country</label><input name="CmCountry" class="form-control form-control-sm" value="@Model.CmCountry"/></div>
+        <div class="col-4"><label class="form-label small">Phone</label><input name="CmPhone" class="form-control form-control-sm" value="@Model.CmPhone"/></div>
+        <div class="col-4"><label class="form-label small">Email</label><input name="CmEmail" class="form-control form-control-sm" value="@Model.CmEmail"/></div>
+        <div class="col-4"><label class="form-label small">Contact</label><input name="CmContact" class="form-control form-control-sm" value="@Model.CmContact"/></div>
+        <div class="col-3"><label class="form-label small">Terms</label><input name="CmTerms" class="form-control form-control-sm" value="@Model.CmTerms"/></div>
+        <div class="col-3"><label class="form-label small">Credit Limit</label><input name="CmCreditlimit" type="number" step="0.01" class="form-control form-control-sm" value="@Model.CmCreditlimit"/></div>
+        <div class="col-12"><label class="form-label small">Notes</label><textarea name="CmNote" class="form-control form-control-sm" rows="2">@Model.CmNote</textarea></div>
+    </div></div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+    </form>
+</div></div></div>

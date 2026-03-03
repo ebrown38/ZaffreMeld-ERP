@@ -1,0 +1,81 @@
+@using ZaffreMeld.Web.Models.Orders
+@model SoMstr
+@{ ViewData["Title"] = $"Sales Order {Model.SoNbr}"; }
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="SalesOrders" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-cart3 me-2 text-primary"></i>Sales Order @Model.SoNbr</h4>
+        <span class="badge ms-2 @(Model.SoStatus == "O" ? "badge-open" : Model.SoStatus == "C" ? "badge-closed" : "badge-hold")">
+            @(Model.SoStatus == "O" ? "Open" : Model.SoStatus == "C" ? "Closed" : "Hold")
+        </span>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="form-section">
+            <div class="form-section-title">Order Details</div>
+            <div class="row g-2">
+                <div class="col-6"><label class="text-muted small">Order #</label><div class="fw-semibold">@Model.SoNbr</div></div>
+                <div class="col-6"><label class="text-muted small">Site</label><div>@Model.SoSite</div></div>
+                <div class="col-6"><label class="text-muted small">Entry Date</label><div>@Model.SoEntdate</div></div>
+                <div class="col-6"><label class="text-muted small">Required Date</label><div>@Model.SoReqdate</div></div>
+                <div class="col-6"><label class="text-muted small">Currency</label><div>@Model.SoCurr</div></div>
+                <div class="col-6"><label class="text-muted small">Total</label><div class="fw-bold text-primary">@Model.SoTotalamt.ToString("N2")</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-section">
+            <div class="form-section-title">Customer</div>
+            @if (ViewBag.Customer is ZaffreMeld.Web.Models.Orders.CmMstr cust)
+            {
+                <div class="fw-semibold">@cust.CmName</div>
+                <div class="text-muted small">@cust.CmCode</div>
+                <div>@cust.CmLine1</div>
+                <div>@cust.CmCity, @cust.CmState @cust.CmZip</div>
+                <div>@cust.CmPhone</div>
+            }
+            <a asp-controller="Orders" asp-action="Customer" asp-route-id="@Model.SoCust" class="btn btn-xs btn-outline-secondary mt-2">
+                View Customer
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SoNote))
+{
+    <div class="form-section mb-3"><div class="form-section-title">Notes</div><p class="mb-0">@Model.SoNote</p></div>
+}
+
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between">
+        <span class="fw-semibold small text-muted">ORDER LINES</span>
+    </div>
+    <table class="table table-sm table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Line</th><th>Item</th><th>Description</th>
+                <th class="num">Qty Ord</th><th class="num">Qty Ship</th>
+                <th class="num">Price</th><th class="num">Ext</th><th>UOM</th><th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (SodDet line in (ViewBag.Lines as IEnumerable<SodDet> ?? Array.Empty<SodDet>()))
+            {
+                <tr>
+                    <td>@line.SodLine</td>
+                    <td><a asp-controller="Inventory" asp-action="Item" asp-route-id="@line.SodItem">@line.SodItem</a></td>
+                    <td>@line.SodDesc</td>
+                    <td class="num">@line.SodQty.ToString("N2")</td>
+                    <td class="num">@line.SodQtyship.ToString("N2")</td>
+                    <td class="num">@line.SodPrice.ToString("N2")</td>
+                    <td class="num">@((line.SodQty * line.SodPrice).ToString("N2"))</td>
+                    <td>@line.SodUom</td>
+                    <td><span class="badge @(line.SodStatus == "O" ? "badge-open" : "badge-closed")">@line.SodStatus</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

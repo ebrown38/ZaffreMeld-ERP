@@ -1,0 +1,47 @@
+@using ZaffreMeld.Web.Models.Vendor
+@model VdMstr
+@{ ViewData["Title"] = "New Vendor"; }
+<div class="page-header">
+    <a asp-action="Vendors" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-building-add me-2 text-primary"></i>New Vendor</h4>
+</div>
+<form method="post" asp-action="NewVendor">
+<div class="row g-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Identity</div>
+        <div class="row g-2">
+            <div class="col-4"><label class="form-label small">Code *</label><input name="VdAddr" class="form-control form-control-sm" required/></div>
+            <div class="col-8"><label class="form-label small">Name *</label><input name="VdName" class="form-control form-control-sm" required/></div>
+            <div class="col-6"><label class="form-label small">Contact</label><input name="VdContact" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Email</label><input name="VdEmail" type="email" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Phone</label><input name="VdPhone" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Tax ID</label><input name="VdTaxid" class="form-control form-control-sm"/></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Address</div>
+        <div class="row g-2">
+            <div class="col-12"><input name="VdLine1" class="form-control form-control-sm" placeholder="Address Line 1"/></div>
+            <div class="col-12"><input name="VdLine2" class="form-control form-control-sm" placeholder="Address Line 2"/></div>
+            <div class="col-5"><input name="VdCity" class="form-control form-control-sm" placeholder="City"/></div>
+            <div class="col-2"><input name="VdState" class="form-control form-control-sm" placeholder="ST"/></div>
+            <div class="col-3"><input name="VdZip" class="form-control form-control-sm" placeholder="Zip"/></div>
+            <div class="col-2"><input name="VdCountry" class="form-control form-control-sm" value="US"/></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Account Settings</div>
+        <div class="row g-2">
+            <div class="col-4"><label class="form-label small">Currency</label><input name="VdCurrency" class="form-control form-control-sm" value="USD"/></div>
+            <div class="col-4"><label class="form-label small">Terms</label><input name="VdTerms" class="form-control form-control-sm"/></div>
+            <div class="col-4"><label class="form-label small">Status</label>
+                <select name="VdStatus" class="form-select form-select-sm"><option value="A">Active</option><option value="I">Inactive</option></select></div>
+            <div class="col-12"><label class="form-label small">Notes</label><textarea name="VdNote" class="form-control form-control-sm" rows="2"></textarea></div>
+        </div>
+    </div></div>
+</div>
+<div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Vendor</button>
+    <a asp-action="Vendors" class="btn btn-outline-secondary">Cancel</a>
+</div>
+</form>

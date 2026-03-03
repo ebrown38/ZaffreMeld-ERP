@@ -1,0 +1,49 @@
+@model CmMstr
+@{ ViewData["Title"] = "New Customer"; }
+<div class="page-header">
+    <a asp-action="Customers" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-person-plus me-2 text-primary"></i>New Customer</h4>
+</div>
+<form method="post" asp-action="NewCustomer">
+<div class="row g-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Identity</div>
+        <div class="row g-2">
+            <div class="col-4"><label class="form-label small">Code <span class="text-danger">*</span></label><input name="CmCode" class="form-control form-control-sm" required/></div>
+            <div class="col-8"><label class="form-label small">Name <span class="text-danger">*</span></label><input name="CmName" class="form-control form-control-sm" required/></div>
+            <div class="col-6"><label class="form-label small">Contact</label><input name="CmContact" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Email</label><input name="CmEmail" type="email" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Phone</label><input name="CmPhone" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Fax</label><input name="CmFax" class="form-control form-control-sm"/></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Address</div>
+        <div class="row g-2">
+            <div class="col-12"><input name="CmLine1" class="form-control form-control-sm" placeholder="Address Line 1"/></div>
+            <div class="col-12"><input name="CmLine2" class="form-control form-control-sm" placeholder="Address Line 2"/></div>
+            <div class="col-5"><input name="CmCity" class="form-control form-control-sm" placeholder="City"/></div>
+            <div class="col-2"><input name="CmState" class="form-control form-control-sm" placeholder="State"/></div>
+            <div class="col-3"><input name="CmZip" class="form-control form-control-sm" placeholder="Zip"/></div>
+            <div class="col-2"><input name="CmCountry" class="form-control form-control-sm" placeholder="Country" value="US"/></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Account Settings</div>
+        <div class="row g-2">
+            <div class="col-4"><label class="form-label small">Currency</label><input name="CmCurrency" class="form-control form-control-sm" value="USD"/></div>
+            <div class="col-4"><label class="form-label small">Terms</label><input name="CmTerms" class="form-control form-control-sm"/></div>
+            <div class="col-4"><label class="form-label small">Tax Code</label><input name="CmTaxcode" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Credit Limit</label><input name="CmCreditlimit" type="number" step="0.01" class="form-control form-control-sm" value="0"/></div>
+            <div class="col-6"><label class="form-label small">Status</label>
+                <select name="CmStatus" class="form-select form-select-sm"><option value="A">Active</option><option value="I">Inactive</option></select>
+            </div>
+            <div class="col-12"><label class="form-label small">Notes</label><textarea name="CmNote" class="form-control form-control-sm" rows="2"></textarea></div>
+        </div>
+    </div></div>
+</div>
+<div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Customer</button>
+    <a asp-action="Customers" class="btn btn-outline-secondary">Cancel</a>
+</div>
+</form>

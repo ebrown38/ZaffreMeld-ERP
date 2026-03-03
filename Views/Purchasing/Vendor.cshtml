@@ -1,0 +1,62 @@
+@model VdMstr
+@{ ViewData["Title"] = Model.VdName; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Vendors" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-building me-2 text-primary"></i>@Model.VdName</h4>
+        <span class="badge ms-2 @(Model.VdStatus=="A"?"badge-active":"badge-inactive")">@(Model.VdStatus=="A"?"Active":"Inactive")</span>
+    </div>
+    <a asp-action="NewPurchaseOrder" class="btn btn-sm btn-primary"><i class="bi bi-bag-plus me-1"></i>New PO</a>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-5"><div class="form-section">
+        <div class="form-section-title">Contact and Address</div>
+        <div class="mb-1"><span class="detail-label">Code</span><div class="detail-value">@Model.VdAddr</div></div>
+        <div class="mb-1"><span class="detail-label">Address</span><div>@Model.VdLine1</div><div>@Model.VdCity, @Model.VdState @Model.VdZip</div></div>
+        <div class="mb-1"><span class="detail-label">Phone</span><div>@Model.VdPhone</div></div>
+        <div class="mb-1"><span class="detail-label">Email</span><div>@Model.VdEmail</div></div>
+        <div class="mb-1"><span class="detail-label">Contact</span><div>@Model.VdContact</div></div>
+    </div></div>
+    <div class="col-md-4"><div class="form-section">
+        <div class="form-section-title">Account Settings</div>
+        <div class="mb-1"><span class="detail-label">Terms</span><div class="detail-value">@Model.VdTerms</div></div>
+        <div class="mb-1"><span class="detail-label">Currency</span><div>@Model.VdCurrency</div></div>
+        <div class="mb-1"><span class="detail-label">Tax ID</span><div>@Model.VdTaxid</div></div>
+        @if (!string.IsNullOrEmpty(Model.VdNote))
+        { <div class="mb-1"><span class="detail-label">Notes</span><div class="small">@Model.VdNote</div></div> }
+    </div></div>
+</div>
+<div class="row g-3">
+    <div class="col-md-8"><div class="browse-table-wrapper">
+        <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">RECENT PURCHASE ORDERS</span></div>
+        <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>PO #</th><th>Entry Date</th><th>Req Date</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            @foreach (PoMstr po in (ViewBag.RecentPos as IEnumerable<PoMstr> ?? Array.Empty<PoMstr>()))
+            {
+                <tr>
+                    <td><a asp-action="PurchaseOrder" asp-route-id="@po.PoNbr">@po.PoNbr</a></td>
+                    <td>@po.PoEntdate</td><td>@po.PoReqdate</td>
+                    <td class="num">@po.PoTotalamt.ToString("N2")</td>
+                    <td><span class="badge @(po.PoStatus=="O"?"badge-open":"badge-closed")">@po.PoStatus</span></td>
+                    <td><a asp-action="PurchaseOrder" asp-route-id="@po.PoNbr" class="btn btn-xs btn-outline-secondary">View</a></td>
+                </tr>
+            }
+            @if (!(ViewBag.RecentPos as IEnumerable<PoMstr> ?? Array.Empty<PoMstr>()).Any())
+            { <tr><td colspan="6" class="text-center text-muted py-3">No purchase orders</td></tr> }
+            </tbody>
+        </table>
+    </div></div>
+    <div class="col-md-4"><div class="browse-table-wrapper">
+        <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">VENDOR PRICING</span></div>
+        <table class="table table-sm mb-0">
+            <thead><tr><th>Item</th><th class="num">Price</th><th>UOM</th></tr></thead>
+            <tbody>
+            @foreach (VprMstr p in (ViewBag.Pricing as IEnumerable<VprMstr> ?? Array.Empty<VprMstr>()))
+            { <tr><td>@p.VprItem</td><td class="num">@p.VprPrice.ToString("N2")</td><td>@p.VprUom</td></tr> }
+            @if (!(ViewBag.Pricing as IEnumerable<VprMstr> ?? Array.Empty<VprMstr>()).Any())
+            { <tr><td colspan="3" class="text-center text-muted py-3">No pricing</td></tr> }
+            </tbody>
+        </table>
+    </div></div>
+</div>

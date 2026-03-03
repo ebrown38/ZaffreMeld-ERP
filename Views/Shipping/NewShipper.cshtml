@@ -1,0 +1,50 @@
+@using ZaffreMeld.Web.Models.Orders
+@using ZaffreMeld.Web.Models.Freight
+@{ ViewData["Title"] = "New Shipper"; }
+<div class="page-header">
+    <a asp-action="Shippers" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-plus-circle me-2 text-primary"></i>New Shipper</h4>
+</div>
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">Select a Sales Order and specify shipping details. Lines are automatically pulled from the open SO.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small">Sales Order *</label>
+                <select class="form-select form-select-sm">
+                    <option value="">-- Select Open Sales Order --</option>
+                    @foreach (SoMstr so in (ViewBag.SalesOrders as IEnumerable<SoMstr> ?? Array.Empty<SoMstr>()))
+                    { <option value="@so.SoNbr">@so.SoNbr — @so.SoCust</option> }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Carrier</label>
+                <select class="form-select form-select-sm">
+                    <option value="">-- Select --</option>
+                    @foreach (CarMstr car in (ViewBag.Carriers as IEnumerable<CarMstr> ?? Array.Empty<CarMstr>()))
+                    { <option value="@car.CarId">@car.CarDesc</option> }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Ship Date</label>
+                <input type="date" class="form-control form-control-sm" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Tracking #</label>
+                <input type="text" class="form-control form-control-sm"/>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Weight (lbs)</label>
+                <input type="number" step="0.01" class="form-control form-control-sm" value="0"/>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Pallets</label>
+                <input type="number" class="form-control form-control-sm" value="0"/>
+            </div>
+        </div>
+        <div class="alert alert-info mt-3 small">
+            <i class="bi bi-info-circle me-1"></i>
+            Full shipper creation requires selecting a Sales Order. Use the API endpoint <code>POST /api/shipping</code> for programmatic creation.
+        </div>
+    </div>
+</div>

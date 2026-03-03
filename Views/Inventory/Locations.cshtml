@@ -1,0 +1,56 @@
+@using ZaffreMeld.Web.Models.Inventory
+@{ ViewData["Title"] = "Locations"; }
+<div class="page-header"><h4><i class="bi bi-geo-alt me-2 text-primary"></i>Warehouse Locations</h4></div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-3">
+        <label class="form-label small mb-1">Warehouse</label>
+        <select name="wh" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">All Warehouses</option>
+            @foreach (WhMstr wh in (ViewBag.Warehouses as IEnumerable<WhMstr> ?? Array.Empty<WhMstr>()))
+            { <option value="@wh.WhId" selected="@(ViewBag.SelectedWh==(string)wh.WhId)">@wh.WhId — @wh.WhDesc</option> }
+        </select>
+    </div>
+</form>
+</div></div>
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="browse-table-wrapper">
+            <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">WAREHOUSES</span></div>
+            <table class="table table-sm mb-0">
+                <thead><tr><th>ID</th><th>Description</th></tr></thead>
+                <tbody>
+                @foreach (WhMstr wh in (ViewBag.Warehouses as IEnumerable<WhMstr> ?? Array.Empty<WhMstr>()))
+                {
+                    <tr class="@(ViewBag.SelectedWh==(string)wh.WhId?"table-active":"")">
+                        <td><a asp-action="Locations" asp-route-wh="@wh.WhId" class="fw-semibold">@wh.WhId</a></td>
+                        <td>@wh.WhDesc</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="browse-table-wrapper">
+            <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">LOCATIONS</span></div>
+            <table class="table table-sm table-hover mb-0">
+                <thead><tr><th>Location</th><th>Description</th><th>Warehouse</th><th>Type</th><th>Active</th></tr></thead>
+                <tbody>
+                @foreach (LocMstr loc in (ViewBag.Locations as IEnumerable<LocMstr> ?? Array.Empty<LocMstr>()))
+                {
+                    <tr>
+                        <td class="fw-semibold">@loc.LocLoc</td>
+                        <td>@loc.LocDesc</td>
+                        <td>@loc.LocWh</td>
+                        <td>@loc.LocType</td>
+                        <td><span class="badge @(loc.LocActive?"badge-active":"badge-inactive")">@(loc.LocActive?"Active":"Inactive")</span></td>
+                    </tr>
+                }
+                @if (!(ViewBag.Locations as IEnumerable<LocMstr> ?? Array.Empty<LocMstr>()).Any())
+                { <tr><td colspan="5" class="text-center text-muted py-4">No locations found</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

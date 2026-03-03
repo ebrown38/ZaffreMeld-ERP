@@ -1,0 +1,38 @@
+@{ ViewData["Title"] = "Chart of Accounts"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-journal-bookmark me-2 text-primary"></i>Chart of Accounts</h4>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-4"><input name="q" value="@ViewBag.Q" class="form-control form-control-sm" placeholder="Search account # or description..."/></div>
+    <div class="col-sm-3"><select name="type" class="form-select form-select-sm">
+        <option value="">All Types</option>
+        <option value="A" selected="@(ViewBag.Type=="A")">Asset</option>
+        <option value="L" selected="@(ViewBag.Type=="L")">Liability</option>
+        <option value="E" selected="@(ViewBag.Type=="E")">Equity</option>
+        <option value="R" selected="@(ViewBag.Type=="R")">Revenue</option>
+        <option value="X" selected="@(ViewBag.Type=="X")">Expense</option>
+    </select></div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+        <a asp-action="Accounts" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+    </div>
+</form>
+</div></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>Account #</th><th>Description</th><th>Type</th><th>Currency</th><th>Site</th><th></th></tr></thead>
+    <tbody>
+    @foreach (AcctMstr a in (ViewBag.Accounts as IEnumerable<AcctMstr> ?? Array.Empty<AcctMstr>()))
+    {
+        <tr>
+            <td><a asp-action="Account" asp-route-id="@a.Id" class="fw-semibold">@a.Id</a></td>
+            <td>@a.Desc</td>
+            <td><span class="badge bg-light text-dark border">@(a.Type=="A"?"Asset":a.Type=="L"?"Liability":a.Type=="E"?"Equity":a.Type=="R"?"Revenue":"Expense")</span></td>
+            <td>@a.Currency</td><td>@a.Site</td>
+            <td><a asp-action="Account" asp-route-id="@a.Id" class="btn btn-xs btn-outline-secondary">Ledger</a></td>
+        </tr>
+    }
+    @if (!(ViewBag.Accounts as IEnumerable<AcctMstr> ?? Array.Empty<AcctMstr>()).Any())
+    { <tr><td colspan="6" class="text-center text-muted py-4">No accounts found</td></tr> }
+    </tbody>
+</table></div>

@@ -1,0 +1,65 @@
+@using ZaffreMeld.Web.Models.Purchasing
+@using ZaffreMeld.Web.Models.Vendor
+@model PoMstr
+@{ ViewData["Title"] = $"PO {Model.PoNbr}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="PurchaseOrders" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-bag me-2 text-primary"></i>Purchase Order @Model.PoNbr</h4>
+        <span class="badge ms-2 @(Model.PoStatus=="O"?"badge-open":"badge-closed")">@(Model.PoStatus=="O"?"Open":"Closed")</span>
+    </div>
+    <a asp-controller="Receiving" asp-action="NewReceiver" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-box-arrow-in-down me-1"></i>Receive Against PO
+    </a>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Order Details</div>
+        <div class="row g-2">
+            <div class="col-6"><span class="detail-label">PO #</span><div class="detail-value">@Model.PoNbr</div></div>
+            <div class="col-6"><span class="detail-label">Site</span><div>@Model.PoSite</div></div>
+            <div class="col-6"><span class="detail-label">Entry Date</span><div>@Model.PoEntdate</div></div>
+            <div class="col-6"><span class="detail-label">Required Date</span><div>@Model.PoReqdate</div></div>
+            <div class="col-6"><span class="detail-label">Currency</span><div>@Model.PoCurr</div></div>
+            <div class="col-6"><span class="detail-label">Total</span><div class="fw-bold text-primary">@Model.PoTotalamt.ToString("N2")</div></div>
+            <div class="col-6"><span class="detail-label">Terms</span><div>@Model.PoTerms</div></div>
+            <div class="col-6"><span class="detail-label">Ship Via</span><div>@Model.PoShipvia</div></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Vendor</div>
+        @if (ViewBag.Vendor is ZaffreMeld.Web.Models.Vendor.VdMstr v)
+        {
+            <div class="fw-semibold">@v.VdName</div>
+            <div class="text-muted small">@v.VdAddr</div>
+            <div>@v.VdLine1</div>
+            <div>@v.VdCity, @v.VdState @v.VdZip</div>
+            <div>@v.VdPhone</div>
+        }
+        <a asp-controller="Purchasing" asp-action="Vendor" asp-route-id="@Model.PoVend" class="btn btn-xs btn-outline-secondary mt-2">View Vendor</a>
+    </div></div>
+</div>
+@if (!string.IsNullOrEmpty(Model.PoNote))
+{ <div class="form-section mb-3"><div class="form-section-title">Notes</div><p class="mb-0">@Model.PoNote</p></div> }
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">PO LINES</span></div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Line</th><th>Item</th><th>Description</th><th class="num">Qty Ord</th><th class="num">Qty Rcv</th><th class="num">Price</th><th class="num">Ext</th><th>UOM</th><th>Req Date</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach (PodMstr line in (ViewBag.Lines as IEnumerable<PodMstr> ?? Array.Empty<PodMstr>()))
+        {
+            <tr>
+                <td>@line.PodLine</td>
+                <td><a asp-controller="Inventory" asp-action="Item" asp-route-id="@line.PodItem">@line.PodItem</a></td>
+                <td>@line.PodDesc</td>
+                <td class="num">@line.PodQty.ToString("N2")</td>
+                <td class="num">@line.PodQtyrcv.ToString("N2")</td>
+                <td class="num">@line.PodPrice.ToString("N2")</td>
+                <td class="num">@((line.PodQty * line.PodPrice).ToString("N2"))</td>
+                <td>@line.PodUom</td><td>@line.PodReqdate</td>
+                <td><span class="badge @(line.PodStatus=="O"?"badge-open":"badge-closed")">@line.PodStatus</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

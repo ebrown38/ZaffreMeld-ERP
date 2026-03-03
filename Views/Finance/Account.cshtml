@@ -1,0 +1,38 @@
+@model AcctMstr
+@{ ViewData["Title"] = $"Account {Model.Id}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Accounts" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-journal-text me-2 text-primary"></i>@Model.Id — @Model.Desc</h4>
+        <span class="badge bg-secondary ms-2">@(Model.Type=="A"?"Asset":Model.Type=="L"?"Liability":Model.Type=="E"?"Equity":Model.Type=="R"?"Revenue":"Expense")</span>
+    </div>
+    <div class="fw-bold text-primary fs-5">Balance: @((ViewBag.Balance as decimal? ?? 0m).ToString("N2"))</div>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <input type="hidden" name="id" value="@Model.Id"/>
+    <div class="col-sm-3"><label class="form-label small mb-1">From Date</label><input name="from" type="date" value="@ViewBag.From" class="form-control form-control-sm"/></div>
+    <div class="col-sm-3"><label class="form-label small mb-1">To Date</label><input name="to" type="date" value="@ViewBag.To" class="form-control form-control-sm"/></div>
+    <div class="col-auto"><button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-filter"></i> Filter</button></div>
+</form>
+</div></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Type</th><th>Doc</th><th class="num">Amount</th><th>CC</th><th>Period</th></tr></thead>
+    <tbody>
+    @foreach (GlTran t in (ViewBag.Transactions as IEnumerable<GlTran> ?? Array.Empty<GlTran>()))
+    {
+        <tr>
+            <td>@t.GltEffdate</td>
+            <td>@t.GltRef</td>
+            <td>@t.GltDesc</td>
+            <td><span class="badge bg-light text-dark border small">@t.GltType</span></td>
+            <td>@t.GltDoc</td>
+            <td class="num @(t.GltAmt>=0?"text-success":"text-danger")">@t.GltAmt.ToString("N2")</td>
+            <td>@t.GltCc</td>
+            <td>@t.GltYear/@t.GltPeriod</td>
+        </tr>
+    }
+    @if (!(ViewBag.Transactions as IEnumerable<GlTran> ?? Array.Empty<GlTran>()).Any())
+    { <tr><td colspan="8" class="text-center text-muted py-4">No transactions</td></tr> }
+    </tbody>
+</table></div>

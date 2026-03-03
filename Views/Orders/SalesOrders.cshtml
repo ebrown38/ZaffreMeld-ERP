@@ -1,0 +1,66 @@
+@using ZaffreMeld.Web.Models.Orders
+@{ ViewData["Title"] = "Sales Orders"; }
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-cart3 me-2 text-primary"></i>Sales Orders</h4>
+    <a asp-controller="Orders" asp-action="NewSalesOrder" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>New Order
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-4">
+                <input name="q" value="@ViewBag.Q" class="form-control form-control-sm" placeholder="Search order # or customer…" />
+            </div>
+            <div class="col-sm-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="O" selected="@(ViewBag.Status == "O")">Open</option>
+                    <option value="C" selected="@(ViewBag.Status == "C")">Closed</option>
+                    <option value="H" selected="@(ViewBag.Status == "H")">Hold</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+                <a asp-action="SalesOrders" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="browse-table-wrapper">
+    <table class="table table-sm table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Order #</th><th>Customer</th><th>Site</th>
+                <th>Entry Date</th><th>Req Date</th>
+                <th class="num">Total</th><th>Status</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (SoMstr so in (ViewBag.Orders as IEnumerable<SoMstr> ?? Array.Empty<SoMstr>()))
+            {
+                <tr>
+                    <td><a asp-action="SalesOrder" asp-route-id="@so.SoNbr" class="fw-semibold">@so.SoNbr</a></td>
+                    <td>@so.SoCust</td>
+                    <td>@so.SoSite</td>
+                    <td>@so.SoEntdate</td>
+                    <td>@so.SoReqdate</td>
+                    <td class="num">@so.SoTotalamt.ToString("N2")</td>
+                    <td>
+                        <span class="badge @(so.SoStatus == "O" ? "badge-open" : so.SoStatus == "C" ? "badge-closed" : "badge-hold")">
+                            @(so.SoStatus == "O" ? "Open" : so.SoStatus == "C" ? "Closed" : "Hold")
+                        </span>
+                    </td>
+                    <td><a asp-action="SalesOrder" asp-route-id="@so.SoNbr" class="btn btn-xs btn-outline-secondary">View</a></td>
+                </tr>
+            }
+            @if (!(ViewBag.Orders as IEnumerable<SoMstr> ?? Array.Empty<SoMstr>()).Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No orders found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,41 @@
+@using ZaffreMeld.Web.Models.HR
+@{ ViewData["Title"] = "Employees"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-person-badge me-2 text-primary"></i>Employees</h4>
+    <a asp-action="NewEmployee" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New Employee</a>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-4"><input name="q" value="@ViewBag.Q" class="form-control form-control-sm" placeholder="Search ID or name..."/></div>
+    <div class="col-sm-3"><select name="status" class="form-select form-select-sm">
+        <option value="">All</option>
+        <option value="A" selected="@(ViewBag.Status=="A")">Active</option>
+        <option value="T" selected="@(ViewBag.Status=="T")">Terminated</option>
+    </select></div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+        <a asp-action="Employees" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+    </div>
+</form>
+</div></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>Emp #</th><th>Last Name</th><th>First Name</th><th>Dept</th><th>Type</th><th>Shift</th><th class="num">Rate</th><th>Hire Date</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (EmpMstr e in (ViewBag.Employees as IEnumerable<EmpMstr> ?? Array.Empty<EmpMstr>()))
+    {
+        <tr>
+            <td><a asp-action="Employee" asp-route-id="@e.EmpNbr" class="fw-semibold">@e.EmpNbr</a></td>
+            <td>@e.EmpLname</td><td>@e.EmpFname</td>
+            <td>@e.EmpDept</td>
+            <td>@(e.EmpType=="H"?"Hourly":"Salary")</td>
+            <td>@e.EmpShift</td>
+            <td class="num">@e.EmpRate.ToString("N2")</td>
+            <td>@e.EmpHiredate</td>
+            <td><span class="badge @(e.EmpStatus=="A"?"badge-active":"badge-inactive")">@(e.EmpStatus=="A"?"Active":"Terminated")</span></td>
+            <td><a asp-action="Employee" asp-route-id="@e.EmpNbr" class="btn btn-xs btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    @if (!(ViewBag.Employees as IEnumerable<EmpMstr> ?? Array.Empty<EmpMstr>()).Any())
+    { <tr><td colspan="10" class="text-center text-muted py-4">No employees found</td></tr> }
+    </tbody>
+</table></div>

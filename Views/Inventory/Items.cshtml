@@ -1,0 +1,44 @@
+@using ZaffreMeld.Web.Models.Inventory
+@{ ViewData["Title"] = "Items"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-box-seam me-2 text-primary"></i>Items</h4>
+    <a asp-action="NewItem" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New Item</a>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-4"><input name="q" value="@ViewBag.Q" class="form-control form-control-sm" placeholder="Search item # or description..."/></div>
+    <div class="col-sm-2"><select name="type" class="form-select form-select-sm">
+        <option value="">All Types</option>
+        <option value="M" selected="@(ViewBag.Type=="M")">Manufactured</option>
+        <option value="P" selected="@(ViewBag.Type=="P")">Purchased</option>
+        <option value="S" selected="@(ViewBag.Type=="S")">Service</option>
+    </select></div>
+    <div class="col-sm-2"><select name="status" class="form-select form-select-sm">
+        <option value="">All</option><option value="A">Active</option><option value="I">Inactive</option>
+    </select></div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+        <a asp-action="Items" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+    </div>
+</form>
+</div></div>
+<div class="browse-table-wrapper"><table class="table table-sm table-hover mb-0">
+    <thead><tr><th>Item #</th><th>Description</th><th>Type</th><th>UOM</th><th class="num">QOH</th><th>Site</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (ItemMstr i in (ViewBag.Items as IEnumerable<ItemMstr> ?? Array.Empty<ItemMstr>()))
+    {
+        <tr>
+            <td><a asp-action="Item" asp-route-id="@i.ItItem" class="fw-semibold">@i.ItItem</a></td>
+            <td>@i.ItDesc</td>
+            <td><span class="badge bg-light text-dark border">@(i.ItType=="M"?"Mfg":i.ItType=="P"?"Purch":"Svc")</span></td>
+            <td>@i.ItUom</td>
+            <td class="num">@i.ItQoh.ToString("N2")</td>
+            <td>@i.ItSite</td>
+            <td><span class="badge @(i.ItStatus=="A"?"badge-active":"badge-inactive")">@(i.ItStatus=="A"?"Active":"Inactive")</span></td>
+            <td><a asp-action="Item" asp-route-id="@i.ItItem" class="btn btn-xs btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    @if (!(ViewBag.Items as IEnumerable<ItemMstr> ?? Array.Empty<ItemMstr>()).Any())
+    { <tr><td colspan="8" class="text-center text-muted py-4">No items found</td></tr> }
+    </tbody>
+</table></div>

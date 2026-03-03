@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ZaffreMeld ERP</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --bs-primary: #1a5276;
+            --bs-secondary: #2980b9;
+        }
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: #1a2744;
+            padding-top: 1rem;
+        }
+        .sidebar .nav-link { color: #ccd6f6; padding: .5rem 1.2rem; border-radius: 6px; margin: 1px 8px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: #2c3e72; color: #fff; }
+        .sidebar .nav-link .bi { margin-right: 8px; width: 18px; }
+        .sidebar-section { color: #8892b0; font-size: .7rem; letter-spacing: 1px; text-transform: uppercase; padding: .5rem 1.2rem; margin-top: .8rem; }
+        .topbar { background: #fff; border-bottom: 1px solid #e1e8f0; height: 56px; }
+        .topbar .company-name { color: #1a2744; font-weight: 700; font-size: 1.1rem; }
+        main { background: #f5f7fa; min-height: calc(100vh - 56px); }
+        .card { border: 1px solid #e1e8f0; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+        .stat-card { border-left: 4px solid; }
+        .stat-card.orders { border-color: #3498db; }
+        .stat-card.pos { border-color: #2ecc71; }
+        .stat-card.shippers { border-color: #e67e22; }
+        .stat-card.workorders { border-color: #9b59b6; }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="topbar d-flex align-items-center px-3 shadow-sm position-fixed w-100" style="z-index:1030;">
+        <button class="btn btn-sm btn-outline-secondary me-3 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="company-name"><i class="bi bi-hexagon-fill text-primary me-2"></i>ZaffreMeld ERP</span>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="badge bg-secondary">@User.FindFirst("site")?.Value</span>
+            <span class="text-muted small">@User.Identity?.Name</span>
+            <form method="post" action="/logout" class="m-0">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex" style="padding-top:56px;">
+        <!-- Sidebar (desktop) -->
+        <nav class="sidebar d-none d-md-flex flex-column position-fixed" style="top:56px;height:calc(100vh - 56px);overflow-y:auto;z-index:1020;">
+            @await Html.PartialAsync("_SidebarNav")
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1 p-4" style="margin-left:240px;">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" style="width:260px;background:#1a2744;">
+        <div class="offcanvas-header">
+            <span class="text-white fw-bold">ZaffreMeld ERP</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            @await Html.PartialAsync("_SidebarNav")
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

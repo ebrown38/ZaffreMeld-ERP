@@ -1,0 +1,50 @@
+@model EmpMstr
+@{ ViewData["Title"] = $"{Model.EmpFname} {Model.EmpLname}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Employees" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-person-badge me-2 text-primary"></i>@Model.EmpFname @Model.EmpLname</h4>
+        <span class="text-muted ms-1 small">(@Model.EmpNbr)</span>
+        <span class="badge ms-2 @(Model.EmpStatus=="A"?"badge-active":"badge-inactive")">@(Model.EmpStatus=="A"?"Active":"Terminated")</span>
+    </div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-5"><div class="form-section">
+        <div class="form-section-title">Employee Details</div>
+        <div class="row g-2">
+            <div class="col-6"><span class="detail-label">Employee #</span><div class="detail-value">@Model.EmpNbr</div></div>
+            <div class="col-6"><span class="detail-label">Department</span><div>@Model.EmpDept</div></div>
+            <div class="col-6"><span class="detail-label">Type</span><div>@(Model.EmpType=="H"?"Hourly":"Salary")</div></div>
+            <div class="col-6"><span class="detail-label">Shift</span><div>@Model.EmpShift</div></div>
+            <div class="col-6"><span class="detail-label">Rate</span><div class="fw-semibold">@Model.EmpRate.ToString("N2") / hr</div></div>
+            <div class="col-6"><span class="detail-label">Work Cell</span><div>@Model.EmpWcell</div></div>
+            <div class="col-6"><span class="detail-label">Hire Date</span><div>@Model.EmpHiredate</div></div>
+            <div class="col-6"><span class="detail-label">Site</span><div>@Model.EmpSite</div></div>
+            @if (!string.IsNullOrEmpty(Model.EmpNote))
+            { <div class="col-12"><span class="detail-label">Notes</span><div class="small">@Model.EmpNote</div></div> }
+        </div>
+    </div></div>
+</div>
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
+        <span class="fw-semibold small text-muted">TIME EXCEPTIONS</span>
+    </div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Date</th><th>Type</th><th>Description</th><th class="num">Hours</th><th>Account</th><th>Approved</th></tr></thead>
+        <tbody>
+        @foreach (EmpException ex in (ViewBag.Exceptions as IEnumerable<EmpException> ?? Array.Empty<EmpException>()))
+        {
+            <tr>
+                <td>@ex.EmpxDate</td>
+                <td>@ex.EmpxType</td>
+                <td>@ex.EmpxDesc</td>
+                <td class="num">@ex.EmpxHours.ToString("N2")</td>
+                <td>@ex.EmpxAcct</td>
+                <td>@(ex.EmpxApproved?"✓":"")</td>
+            </tr>
+        }
+        @if (!(ViewBag.Exceptions as IEnumerable<EmpException> ?? Array.Empty<EmpException>()).Any())
+        { <tr><td colspan="6" class="text-center text-muted py-3">No exceptions</td></tr> }
+        </tbody>
+    </table>
+</div>

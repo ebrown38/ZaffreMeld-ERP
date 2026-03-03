@@ -1,0 +1,147 @@
+<ul class="nav flex-column mt-2 pb-4">
+
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+           asp-controller="Home" asp-action="Index">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </li>
+
+    <div class="sidebar-section">Sales</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" && ViewContext.RouteData.Values["action"]?.ToString() == "SalesOrders" ? "active" : "")"
+           asp-controller="Orders" asp-action="SalesOrders">
+            <i class="bi bi-cart3"></i> Sales Orders
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" && ViewContext.RouteData.Values["action"]?.ToString() == "Customers" ? "active" : "")"
+           asp-controller="Orders" asp-action="Customers">
+            <i class="bi bi-people"></i> Customers
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shipping" ? "active" : "")"
+           asp-controller="Shipping" asp-action="Shippers">
+            <i class="bi bi-truck"></i> Shipping
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "AR" ? "active" : "")"
+           asp-controller="Finance" asp-action="AR">
+            <i class="bi bi-receipt"></i> Invoices (AR)
+        </a>
+    </li>
+
+    <div class="sidebar-section">Purchasing</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Purchasing" && ViewContext.RouteData.Values["action"]?.ToString() == "PurchaseOrders" ? "active" : "")"
+           asp-controller="Purchasing" asp-action="PurchaseOrders">
+            <i class="bi bi-bag"></i> Purchase Orders
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Purchasing" && ViewContext.RouteData.Values["action"]?.ToString() == "Vendors" ? "active" : "")"
+           asp-controller="Purchasing" asp-action="Vendors">
+            <i class="bi bi-building"></i> Vendors
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Receiving" ? "active" : "")"
+           asp-controller="Receiving" asp-action="Index">
+            <i class="bi bi-box-arrow-in-down"></i> Receiving
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "AP" ? "active" : "")"
+           asp-controller="Finance" asp-action="AP">
+            <i class="bi bi-credit-card"></i> Vouchers (AP)
+        </a>
+    </li>
+
+    <div class="sidebar-section">Inventory</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["action"]?.ToString() == "Items" ? "active" : "")"
+           asp-controller="Inventory" asp-action="Items">
+            <i class="bi bi-box-seam"></i> Items
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["action"]?.ToString() == "Bom" ? "active" : "")"
+           asp-controller="Inventory" asp-action="Bom">
+            <i class="bi bi-diagram-3"></i> Bill of Materials
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inventory" && ViewContext.RouteData.Values["action"]?.ToString() == "Locations" ? "active" : "")"
+           asp-controller="Inventory" asp-action="Locations">
+            <i class="bi bi-geo-alt"></i> Locations
+        </a>
+    </li>
+
+    <div class="sidebar-section">Finance</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "Accounts" ? "active" : "")"
+           asp-controller="Finance" asp-action="Accounts">
+            <i class="bi bi-journal-bookmark"></i> Chart of Accounts
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "GlTransactions" ? "active" : "")"
+           asp-controller="Finance" asp-action="GlTransactions">
+            <i class="bi bi-table"></i> GL Transactions
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "BalanceSheet" ? "active" : "")"
+           asp-controller="Finance" asp-action="BalanceSheet">
+            <i class="bi bi-bar-chart"></i> Balance Sheet
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" && ViewContext.RouteData.Values["action"]?.ToString() == "TrialBalance" ? "active" : "")"
+           asp-controller="Finance" asp-action="TrialBalance">
+            <i class="bi bi-calculator"></i> Trial Balance
+        </a>
+    </li>
+
+    <div class="sidebar-section">Human Resources</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HR" ? "active" : "")"
+           asp-controller="HR" asp-action="Employees">
+            <i class="bi bi-person-badge"></i> Employees
+        </a>
+    </li>
+
+    <div class="sidebar-section">Administration</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")"
+           asp-controller="Admin" asp-action="Users">
+            <i class="bi bi-person-lock"></i> Users
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Sites" ? "active" : "")"
+           asp-controller="Admin" asp-action="Sites">
+            <i class="bi bi-buildings"></i> Sites
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Codes" ? "active" : "")"
+           asp-controller="Admin" asp-action="Codes">
+            <i class="bi bi-list-check"></i> Code Tables
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "ChangeLog" ? "active" : "")"
+           asp-controller="Admin" asp-action="ChangeLog">
+            <i class="bi bi-clock-history"></i> Audit Log
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/api-docs" target="_blank">
+            <i class="bi bi-braces"></i> API Docs
+        </a>
+    </li>
+
+</ul>

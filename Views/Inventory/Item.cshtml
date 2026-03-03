@@ -1,0 +1,108 @@
+@using ZaffreMeld.Web.Models.Inventory
+@model ItemMstr
+@{ ViewData["Title"] = Model.ItItem; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Items" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline"><i class="bi bi-box-seam me-2 text-primary"></i>@Model.ItItem</h4>
+        <span class="text-muted ms-2">@Model.ItDesc</span>
+        <span class="badge ms-2 @(Model.ItStatus=="A"?"badge-active":"badge-inactive")">@(Model.ItStatus=="A"?"Active":"Inactive")</span>
+    </div>
+    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal">
+        <i class="bi bi-pencil me-1"></i>Edit
+    </button>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-4"><div class="form-section">
+        <div class="form-section-title">Item Details</div>
+        <div class="mb-1"><span class="detail-label">Item #</span><div class="detail-value">@Model.ItItem</div></div>
+        <div class="mb-1"><span class="detail-label">Description</span><div>@Model.ItDesc</div></div>
+        <div class="mb-1"><span class="detail-label">Type</span><div>@(Model.ItType=="M"?"Manufactured":Model.ItType=="P"?"Purchased":"Service")</div></div>
+        <div class="mb-1"><span class="detail-label">UOM</span><div>@Model.ItUom</div></div>
+        <div class="mb-1"><span class="detail-label">Lot Size</span><div>@Model.ItLotsize</div></div>
+        <div class="mb-1"><span class="detail-label">Lead Time (days)</span><div>@Model.ItLeadtime</div></div>
+        <div class="mb-1"><span class="detail-label">ABC Class</span><div>@Model.ItAbc</div></div>
+    </div></div>
+    <div class="col-md-4"><div class="form-section">
+        <div class="form-section-title">Stock</div>
+        <div class="mb-1"><span class="detail-label">Qty On Hand</span><div class="detail-value fw-bold text-primary">@Model.ItQoh.ToString("N2") @Model.ItUom</div></div>
+        <div class="mb-1"><span class="detail-label">Safety Stock</span><div>@Model.ItSafetystock.ToString("N2")</div></div>
+        <div class="mb-1"><span class="detail-label">Warehouse</span><div>@Model.ItWh</div></div>
+        <div class="mb-1"><span class="detail-label">Location</span><div>@Model.ItLoc</div></div>
+        <div class="mb-1"><span class="detail-label">Drawing</span><div>@Model.ItDrawing</div></div>
+        <div class="mb-1"><span class="detail-label">Revision</span><div>@Model.ItRevision</div></div>
+    </div></div>
+    <div class="col-md-4"><div class="form-section">
+        <div class="form-section-title">Cost</div>
+        @if (ViewBag.Cost is ItemCost cost)
+        {
+            <div class="mb-1"><span class="detail-label">Material</span><div class="detail-value">@cost.ItcMatcost.ToString("N4")</div></div>
+            <div class="mb-1"><span class="detail-label">Labor</span><div>@cost.ItcLabcost.ToString("N4")</div></div>
+            <div class="mb-1"><span class="detail-label">Overhead</span><div>@cost.ItcOvhcost.ToString("N4")</div></div>
+            <div class="mb-1"><span class="detail-label">Total Cost</span><div class="fw-semibold">@cost.ItcTotalcost.ToString("N4")</div></div>
+            <div class="mb-1"><span class="detail-label">Currency</span><div>@cost.ItcCurrency</div></div>
+        }
+        else { <div class="text-muted small">No cost record</div> }
+        <div class="mt-2 pt-2 border-top">
+            <a asp-action="Bom" asp-route-parent="@Model.ItItem" class="btn btn-xs btn-outline-secondary">
+                <i class="bi bi-diagram-3 me-1"></i>View BOM
+            </a>
+        </div>
+    </div></div>
+</div>
+@if ((ViewBag.BomLines as System.Collections.IEnumerable) != null)
+{
+<div class="browse-table-wrapper">
+    <div class="px-3 py-2 bg-light border-bottom"><span class="fw-semibold small text-muted">BILL OF MATERIALS</span></div>
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>Seq</th><th>Component</th><th class="num">Qty</th><th>UOM</th><th>Type</th><th>Active</th></tr></thead>
+        <tbody>
+        @foreach (PbmMstr bom in (ViewBag.BomLines as IEnumerable<PbmMstr> ?? Array.Empty<PbmMstr>()))
+        {
+            <tr>
+                <td>@bom.PsSeq</td>
+                <td><a asp-action="Item" asp-route-id="@bom.PsChild">@bom.PsChild</a></td>
+                <td class="num">@bom.PsQty.ToString("N4")</td>
+                <td>@bom.PsUom</td>
+                <td>@bom.PsType</td>
+                <td><span class="badge @(bom.PsActive?"badge-active":"badge-inactive")">@(bom.PsActive?"Yes":"No")</span></td>
+            </tr>
+        }
+        @if (!(ViewBag.BomLines as IEnumerable<PbmMstr> ?? Array.Empty<PbmMstr>()).Any())
+        { <tr><td colspan="6" class="text-center text-muted py-3">No BOM components</td></tr> }
+        </tbody>
+    </table>
+</div>
+}
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Edit Item</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <form method="post" asp-action="EditItem" asp-route-id="@Model.ItItem">
+    <div class="modal-body"><div class="row g-2">
+        <div class="col-12"><label class="form-label small">Description</label><input name="ItDesc" class="form-control form-control-sm" value="@Model.ItDesc"/></div>
+        <div class="col-4"><label class="form-label small">UOM</label><input name="ItUom" class="form-control form-control-sm" value="@Model.ItUom"/></div>
+        <div class="col-4"><label class="form-label small">Type</label>
+            <select name="ItType" class="form-select form-select-sm">
+                <option value="M" selected="@(Model.ItType=="M")">Manufactured</option>
+                <option value="P" selected="@(Model.ItType=="P")">Purchased</option>
+                <option value="S" selected="@(Model.ItType=="S")">Service</option>
+            </select></div>
+        <div class="col-4"><label class="form-label small">Status</label>
+            <select name="ItStatus" class="form-select form-select-sm">
+                <option value="A" selected="@(Model.ItStatus=="A")">Active</option>
+                <option value="I" selected="@(Model.ItStatus=="I")">Inactive</option>
+            </select></div>
+        <div class="col-4"><label class="form-label small">Lot Size</label><input name="ItLotsize" type="number" class="form-control form-control-sm" value="@Model.ItLotsize"/></div>
+        <div class="col-4"><label class="form-label small">Lead Time</label><input name="ItLeadtime" type="number" step="0.1" class="form-control form-control-sm" value="@Model.ItLeadtime"/></div>
+        <div class="col-4"><label class="form-label small">Safety Stock</label><input name="ItSafetystock" type="number" step="0.01" class="form-control form-control-sm" value="@Model.ItSafetystock"/></div>
+        <div class="col-6"><label class="form-label small">Warehouse</label><input name="ItWh" class="form-control form-control-sm" value="@Model.ItWh"/></div>
+        <div class="col-6"><label class="form-label small">Location</label><input name="ItLoc" class="form-control form-control-sm" value="@Model.ItLoc"/></div>
+        <div class="col-6"><label class="form-label small">Drawing</label><input name="ItDrawing" class="form-control form-control-sm" value="@Model.ItDrawing"/></div>
+        <div class="col-6"><label class="form-label small">Revision</label><input name="ItRevision" class="form-control form-control-sm" value="@Model.ItRevision"/></div>
+    </div></div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+    </div>
+    </form>
+</div></div></div>

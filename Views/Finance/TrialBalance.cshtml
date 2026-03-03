@@ -1,0 +1,45 @@
+@{ ViewData["Title"] = "Trial Balance"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-calculator me-2 text-primary"></i>Trial Balance</h4>
+    <div class="text-muted small">Period @ViewBag.Period / @ViewBag.Year</div>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-auto"><label class="form-label small mb-1">Year</label><input name="year" value="@ViewBag.Year" class="form-control form-control-sm" style="width:80px"/></div>
+    <div class="col-auto"><label class="form-label small mb-1">Period</label>
+        <select name="period" class="form-select form-select-sm" style="width:80px">
+            @for (int p = 1; p <= 12; p++)
+            { <option value="@p.ToString("D2")" selected="@(ViewBag.Period==p.ToString("D2"))">@p.ToString("D2")</option> }
+        </select></div>
+    <div class="col-auto"><button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-arrow-repeat"></i> Refresh</button></div>
+</form>
+</div></div>
+<div class="browse-table-wrapper">
+<table class="table table-sm mb-0">
+    <thead><tr><th>Account</th><th class="num">Debits</th><th class="num">Credits</th><th class="num">Net</th></tr></thead>
+    <tbody>
+    @{ var rows = ViewBag.Rows as System.Collections.IEnumerable; }
+    @if (rows != null) {
+        @foreach (dynamic row in rows)
+        {
+            <tr>
+                <td><a asp-action="Account" asp-route-id="@row.Account">@row.Account</a></td>
+                <td class="num">@((row.Debits as decimal? ?? 0m).ToString("N2"))</td>
+                <td class="num">@((row.Credits as decimal? ?? 0m).ToString("N2"))</td>
+                <td class="num fw-semibold">@(((row.Debits as decimal? ?? 0m) - (row.Credits as decimal? ?? 0m)).ToString("N2"))</td>
+            </tr>
+        }
+    }
+    </tbody>
+    <tfoot class="table-light fw-bold">
+        <tr>
+            <td>TOTALS</td>
+            <td class="num">@((ViewBag.TotalDebits as decimal? ?? 0m).ToString("N2"))</td>
+            <td class="num">@((ViewBag.TotalCredits as decimal? ?? 0m).ToString("N2"))</td>
+            <td class="num @(Math.Abs((ViewBag.TotalDebits as decimal? ?? 0m) - (ViewBag.TotalCredits as decimal? ?? 0m)) < 0.01m ? "text-success" : "text-danger")">
+                @(((ViewBag.TotalDebits as decimal? ?? 0m) - (ViewBag.TotalCredits as decimal? ?? 0m)).ToString("N2"))
+            </td>
+        </tr>
+    </tfoot>
+</table>
+</div>

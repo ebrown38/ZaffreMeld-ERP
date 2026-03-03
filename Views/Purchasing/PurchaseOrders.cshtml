@@ -1,0 +1,39 @@
+@using ZaffreMeld.Web.Models.Purchasing
+@{ ViewData["Title"] = "Purchase Orders"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-bag me-2 text-primary"></i>Purchase Orders</h4>
+    <a asp-controller="Purchasing" asp-action="NewPurchaseOrder" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>New PO</a>
+</div>
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-4"><input name="q" value="@ViewBag.Q" class="form-control form-control-sm" placeholder="Search PO # or vendor..."/></div>
+    <div class="col-sm-3"><select name="status" class="form-select form-select-sm">
+        <option value="">All Statuses</option>
+        <option value="O" selected="@(ViewBag.Status=="O")">Open</option>
+        <option value="C" selected="@(ViewBag.Status=="C")">Closed</option>
+    </select></div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+        <a asp-action="PurchaseOrders" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+    </div>
+</form>
+</div></div>
+<div class="browse-table-wrapper">
+<table class="table table-sm table-hover mb-0">
+    <thead><tr><th>PO #</th><th>Vendor</th><th>Site</th><th>Entry Date</th><th>Req Date</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (PoMstr po in (ViewBag.Orders as IEnumerable<PoMstr> ?? Array.Empty<PoMstr>()))
+    {
+        <tr>
+            <td><a asp-action="PurchaseOrder" asp-route-id="@po.PoNbr" class="fw-semibold">@po.PoNbr</a></td>
+            <td>@po.PoVend</td><td>@po.PoSite</td><td>@po.PoEntdate</td><td>@po.PoReqdate</td>
+            <td class="num">@po.PoTotalamt.ToString("N2")</td>
+            <td><span class="badge @(po.PoStatus=="O"?"badge-open":"badge-closed")">@(po.PoStatus=="O"?"Open":"Closed")</span></td>
+            <td><a asp-action="PurchaseOrder" asp-route-id="@po.PoNbr" class="btn btn-xs btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    @if (!(ViewBag.Orders as IEnumerable<PoMstr> ?? Array.Empty<PoMstr>()).Any())
+    { <tr><td colspan="8" class="text-center text-muted py-4">No purchase orders found</td></tr> }
+    </tbody>
+</table>
+</div>

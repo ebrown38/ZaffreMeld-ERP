@@ -1,0 +1,110 @@
+@{ ViewData["Title"] = "New Sales Order"; }
+
+<div class="page-header">
+    <a asp-action="SalesOrders" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-plus-circle me-2 text-primary"></i>New Sales Order</h4>
+</div>
+
+<form method="post" asp-action="NewSalesOrder">
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="form-section">
+            <div class="form-section-title">Order Header</div>
+            <div class="mb-2">
+                <label class="form-label small">Customer <span class="text-danger">*</span></label>
+                <select name="SoCust" class="form-select form-select-sm" required>
+                    <option value="">-- Select Customer --</option>
+                    @foreach (CmMstr c in (ViewBag.Customers as IEnumerable<CmMstr> ?? Array.Empty<CmMstr>()))
+                    {
+                        <option value="@c.CmCode">@c.CmName (@c.CmCode)</option>
+                    }
+                </select>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label small">Required Date</label>
+                    <input name="SoReqdate" type="date" class="form-control form-control-sm" value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Ship-To Code</label>
+                    <input name="SoShip" type="text" class="form-control form-control-sm" placeholder="Default" />
+                </div>
+            </div>
+            <div class="mt-2">
+                <label class="form-label small">Notes</label>
+                <textarea name="SoNote" class="form-control form-control-sm" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-section mt-3">
+    <div class="form-section-title d-flex justify-content-between">
+        Order Lines
+        <button type="button" class="btn btn-xs btn-outline-primary" onclick="addLine()">
+            <i class="bi bi-plus"></i> Add Line
+        </button>
+    </div>
+    <table class="table table-sm" id="linesTable">
+        <thead>
+            <tr><th>Item</th><th>Description</th><th>Qty</th><th>Price</th><th>Ext</th><th></th></tr>
+        </thead>
+        <tbody id="linesBody">
+            <tr class="line-row">
+                <td>
+                    <select name="items[]" class="form-select form-select-sm item-select" onchange="fillDesc(this)">
+                        <option value="">-- Select --</option>
+                        @foreach (var item in (ViewBag.Items as IEnumerable<dynamic> ?? Array.Empty<dynamic>()))
+                        {
+                            <option value="@item.ItItem" data-desc="@item.ItDesc">@item.ItItem — @item.ItDesc</option>
+                        }
+                    </select>
+                </td>
+                <td><input type="text" class="form-control form-control-sm desc-field" readonly /></td>
+                <td><input name="qtys[]" type="number" step="0.0001" class="form-control form-control-sm qty-field" value="1" onchange="calcExt(this)" /></td>
+                <td><input name="prices[]" type="number" step="0.0001" class="form-control form-control-sm price-field" value="0" onchange="calcExt(this)" /></td>
+                <td><input type="text" class="form-control form-control-sm ext-field" readonly value="0.00" /></td>
+                <td><button type="button" class="btn btn-xs btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-trash"></i></button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Order</button>
+    <a asp-action="SalesOrders" class="btn btn-outline-secondary">Cancel</a>
+</div>
+</form>
+
+@section Scripts {
+<script>
+const items = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    (ViewBag.Items as IEnumerable<dynamic> ?? Array.Empty<dynamic>())
+    .Cast<object>().Select(i => new { ItItem = i.GetType().GetProperty("ItItem")?.GetValue(i)?.ToString(), ItDesc = i.GetType().GetProperty("ItDesc")?.GetValue(i)?.ToString() })
+));
+
+function fillDesc(sel) {
+    const row = sel.closest('tr');
+    const opt = sel.options[sel.selectedIndex];
+    row.querySelector('.desc-field').value = opt.dataset.desc || '';
+    calcExt(sel);
+}
+function calcExt(el) {
+    const row = el.closest('tr');
+    const qty = parseFloat(row.querySelector('.qty-field').value) || 0;
+    const price = parseFloat(row.querySelector('.price-field').value) || 0;
+    row.querySelector('.ext-field').value = (qty * price).toFixed(2);
+}
+function addLine() {
+    const tbody = document.getElementById('linesBody');
+    const first = tbody.querySelector('tr').cloneNode(true);
+    first.querySelectorAll('input:not([type=hidden])').forEach(i => { if (i.type === 'number') i.value = i.name.includes('qty') ? '1' : '0'; else i.value = ''; });
+    first.querySelector('select').selectedIndex = 0;
+    tbody.appendChild(first);
+}
+function removeLine(btn) {
+    const tbody = document.getElementById('linesBody');
+    if (tbody.querySelectorAll('tr').length > 1) btn.closest('tr').remove();
+}
+</script>
+}

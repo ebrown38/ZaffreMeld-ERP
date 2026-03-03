@@ -1,0 +1,61 @@
+@using ZaffreMeld.Web.Models.Vendor
+@using ZaffreMeld.Web.Models.Inventory
+@{ ViewData["Title"] = "New Purchase Order"; }
+<div class="page-header">
+    <a asp-action="PurchaseOrders" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-plus-circle me-2 text-primary"></i>New Purchase Order</h4>
+</div>
+<form method="post" asp-action="NewPurchaseOrder">
+<div class="row g-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">PO Header</div>
+        <div class="mb-2">
+            <label class="form-label small">Vendor <span class="text-danger">*</span></label>
+            <select name="PoVend" class="form-select form-select-sm" required>
+                <option value="">-- Select Vendor --</option>
+                @foreach (VdMstr v in (ViewBag.Vendors as IEnumerable<VdMstr> ?? Array.Empty<VdMstr>()))
+                { <option value="@v.VdAddr">@v.VdName (@v.VdAddr)</option> }
+            </select>
+        </div>
+        <div class="row g-2">
+            <div class="col-6"><label class="form-label small">Required Date</label>
+                <input name="PoReqdate" type="date" class="form-control form-control-sm" value="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")"/></div>
+            <div class="col-6"><label class="form-label small">Ship Via</label><input name="PoShipvia" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Terms</label><input name="PoTerms" class="form-control form-control-sm"/></div>
+            <div class="col-6"><label class="form-label small">Currency</label><input name="PoCurr" class="form-control form-control-sm" value="USD"/></div>
+        </div>
+        <div class="mt-2"><label class="form-label small">Notes</label><textarea name="PoNote" class="form-control form-control-sm" rows="2"></textarea></div>
+    </div></div>
+</div>
+<div class="form-section mt-3">
+    <div class="form-section-title d-flex justify-content-between">PO Lines
+        <button type="button" class="btn btn-xs btn-outline-primary" onclick="addLine()"><i class="bi bi-plus"></i> Add Line</button>
+    </div>
+    <table class="table table-sm"><thead><tr><th>Item</th><th>Description</th><th>Qty</th><th>Price</th><th>Ext</th><th></th></tr></thead>
+    <tbody id="linesBody">
+        <tr class="line-row">
+            <td><select name="items[]" class="form-select form-select-sm" onchange="fillDesc(this)">
+                <option value="">-- Select --</option>
+                @foreach (ItemMstr i in (ViewBag.Items as IEnumerable<ItemMstr> ?? Array.Empty<ItemMstr>()))
+                { <option value="@i.ItItem" data-desc="@i.ItDesc">@i.ItItem</option> }
+            </select></td>
+            <td><input type="text" class="form-control form-control-sm desc-field" readonly/></td>
+            <td><input name="qtys[]" type="number" step="0.0001" min="0" class="form-control form-control-sm qty-field" value="1" oninput="calcExt(this)"/></td>
+            <td><input name="prices[]" type="number" step="0.0001" min="0" class="form-control form-control-sm price-field" value="0" oninput="calcExt(this)"/></td>
+            <td><input type="text" class="form-control form-control-sm ext-field" readonly value="0.00"/></td>
+            <td><button type="button" class="btn btn-xs btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-trash"></i></button></td>
+        </tr>
+    </tbody></table>
+</div>
+<div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create PO</button>
+    <a asp-action="PurchaseOrders" class="btn btn-outline-secondary">Cancel</a>
+</div>
+</form>
+@section Scripts {
+<script>
+function fillDesc(sel){const row=sel.closest('tr');row.querySelector('.desc-field').value=sel.options[sel.selectedIndex].dataset.desc||'';}
+function calcExt(el){const row=el.closest('tr');const ext=(parseFloat(row.querySelector('.qty-field').value)||0)*(parseFloat(row.querySelector('.price-field').value)||0);row.querySelector('.ext-field').value=ext.toFixed(2);}
+function addLine(){const t=document.getElementById('linesBody');const r=t.rows[0].cloneNode(true);r.querySelectorAll('input').forEach(i=>{i.value=i.classList.contains('qty-field')?'1':'0';if(i.classList.contains('desc-field'))i.value='';});r.querySelector('select').selectedIndex=0;t.appendChild(r);}
+function removeLine(btn){const t=document.getElementById('linesBody');if(t.rows.length>1)btn.closest('tr').remove();}
+</script>}

@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZaffreMeld ERP — Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        body { background: #0f1729; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: #1a2744; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); width: 100%; max-width: 420px; }
+        .login-card .form-control { background: #0f1729; border-color: #2c3e72; color: #ccd6f6; }
+        .login-card .form-control:focus { border-color: #4a90d9; box-shadow: 0 0 0 0.25rem rgba(74,144,217,0.25); color: #fff; background: #0f1729; }
+        .login-card label { color: #8892b0; }
+        .logo-hex { font-size: 2.5rem; color: #4a90d9; }
+        .brand-name { color: #ccd6f6; font-weight: 700; font-size: 1.5rem; }
+        .brand-sub { color: #8892b0; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+<div class="login-card p-4 p-md-5 mx-3">
+    <div class="text-center mb-4">
+        <div class="logo-hex mb-2"><i class="bi bi-hexagon-fill"></i></div>
+        <div class="brand-name">ZaffreMeld ERP</div>
+        <div class="brand-sub">Enterprise Resource Planning</div>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-sm py-2 px-3 mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>@ViewBag.Error</span>
+        </div>
+    }
+
+    <form method="post" action="/login@(ViewBag.ReturnUrl != null ? "?returnUrl=" + Uri.EscapeDataString(ViewBag.ReturnUrl) : "")">
+        <div class="mb-3">
+            <label for="username" class="form-label small">Username</label>
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 border-secondary">
+                    <i class="bi bi-person text-secondary"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="username" name="username"
+                       placeholder="Enter username" autofocus autocomplete="username" required />
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="form-label small">Password</label>
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 border-secondary">
+                    <i class="bi bi-lock text-secondary"></i>
+                </span>
+                <input type="password" class="form-control border-start-0" id="password" name="password"
+                       placeholder="Enter password" autocomplete="current-password" required />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+    </form>
+
+    <div class="text-center mt-4">
+        <small class="text-muted">ZaffreMeld ERP — ASP.NET Core Edition</small>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
