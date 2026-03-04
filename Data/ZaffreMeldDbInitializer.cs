@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Identity;
 using ZaffreMeld.Web.Models.Administration;
+using Microsoft.AspNetCore.Identity;
 
 namespace ZaffreMeld.Web.Data;
 
@@ -33,7 +33,7 @@ public static class ZaffreMeldDbInitializer
         }
 
         // ── Default admin user ─────────────────────────────────────────────────
-        const string adminEmail = "admin@ZaffreMeld.local";
+        const string adminEmail = "admin@zaffremeld.local";
         if (await userManager.FindByEmailAsync(adminEmail) == null)
         {
             var admin = new ZaffreMeldUser

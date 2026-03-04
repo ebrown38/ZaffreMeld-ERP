@@ -1,6 +1,6 @@
+using ZaffreMeld.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ZaffreMeld.Web.Services;
 
 namespace ZaffreMeld.Web.Controllers.Api;
 
@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { success = false, message });
 
         // Set secure cookie (mirrors Java session cookie approach)
-        Response.Cookies.Append("bs_token", token, new CookieOptions
+        Response.Cookies.Append("zm_token", token, new CookieOptions
         {
             HttpOnly = true,
             Secure = Request.IsHttps,
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
     {
         var userId = User.Identity?.Name ?? string.Empty;
         await _auth.LogoutAsync(userId);
-        Response.Cookies.Delete("bs_token");
+        Response.Cookies.Delete("zm_token");
         return Ok(new { success = true, message = "Logged out." });
     }
 

@@ -1,27 +1,27 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using ZaffreMeld.Web.Models.Administration;
-using ZaffreMeld.Web.Models.Distribution;
-using ZaffreMeld.Web.Models.EDI;
-using ZaffreMeld.Web.Models.Engineering;
 using ZaffreMeld.Web.Models.Finance;
-using ZaffreMeld.Web.Models.Freight;
-using ZaffreMeld.Web.Models.HR;
 using ZaffreMeld.Web.Models.Inventory;
 using ZaffreMeld.Web.Models.Orders;
-using ZaffreMeld.Web.Models.Production;
 using ZaffreMeld.Web.Models.Purchasing;
-using ZaffreMeld.Web.Models.Receiving;
-using ZaffreMeld.Web.Models.Scheduling;
 using ZaffreMeld.Web.Models.Shipping;
 using ZaffreMeld.Web.Models.Vendor;
+using ZaffreMeld.Web.Models.HR;
+using ZaffreMeld.Web.Models.EDI;
+using ZaffreMeld.Web.Models.Engineering;
+using ZaffreMeld.Web.Models.Freight;
+using ZaffreMeld.Web.Models.Production;
+using ZaffreMeld.Web.Models.Scheduling;
+using ZaffreMeld.Web.Models.Receiving;
+using ZaffreMeld.Web.Models.Distribution;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace ZaffreMeld.Web.Data;
 
 /// <summary>
 /// Main EF Core DbContext for ZaffreMeld ERP.
 /// Replaces direct JDBC SQL connections from the Java source.
-/// Each DbSet corresponds to a SQL table in the original ZaffreMeld schema.
+/// Each DbSet corresponds to a SQL table in the original zaffremeld schema.
 /// </summary>
 public class ZaffreMeldDbContext : IdentityDbContext<ZaffreMeldUser, ZaffreMeldRole, string>
 {
@@ -163,8 +163,8 @@ public class ZaffreMeldDbContext : IdentityDbContext<ZaffreMeldUser, ZaffreMeldR
         base.OnModelCreating(modelBuilder);
 
         // ── Identity table rename (mirrors original user/role tables) ─────────
-        modelBuilder.Entity<ZaffreMeldUser>().ToTable("bs_users");
-        modelBuilder.Entity<ZaffreMeldRole>().ToTable("bs_roles");
+        modelBuilder.Entity<ZaffreMeldUser>().ToTable("zm_users");
+        modelBuilder.Entity<ZaffreMeldRole>().ToTable("zm_roles");
 
         // ── Composite keys ────────────────────────────────────────────────────
         modelBuilder.Entity<ExcMstr>().HasKey(x => new { x.ExcBase, x.ExcForeign });

@@ -1,0 +1,51 @@
+@using ZaffreMeld.Web.Models.EDI
+@model EdiMstr
+@{ ViewData["Title"] = $"EDI {Model.EdiDoc2} — {Model.EdiId}"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="d-inline">
+            <i class="bi bi-arrow-left-right me-2 text-primary"></i>
+            EDI @Model.EdiDoc2
+            <span class="text-muted fw-normal small ms-1">@Model.EdiId</span>
+        </h4>
+        <span class="badge ms-2 @(Model.EdiStatus=="A"?"badge-active":Model.EdiStatus=="E"?"badge-inactive":"badge-hold")">
+            @(Model.EdiStatus switch {"A"=>"Accepted","E"=>"Error","R"=>"Rejected",_=>Model.EdiStatus})
+        </span>
+    </div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Transaction Details</div>
+        <div class="row g-2">
+            <div class="col-6"><span class="detail-label">Doc Type</span>
+                <div class="detail-value">
+                    @Model.EdiDoc2 —
+                    @(Model.EdiDoc2 switch {"850"=>"Purchase Order","810"=>"Invoice","856"=>"Ship Notice","997"=>"Func Ack",_=>"Unknown"})
+                </div></div>
+            <div class="col-6"><span class="detail-label">Direction</span>
+                <div>@(Model.EdiDir == "IN" ? "Inbound (received)" : "Outbound (sent)")</div></div>
+            <div class="col-6"><span class="detail-label">Partner</span>
+                <div><a asp-action="Partner" asp-route-id="@Model.EdiPartner">@Model.EdiPartner</a></div></div>
+            <div class="col-6"><span class="detail-label">Site</span><div>@Model.EdiSite</div></div>
+            <div class="col-6"><span class="detail-label">Timestamp</span>
+                <div>@Model.EdiTimestamp.ToString("yyyy-MM-dd HH:mm:ss UTC")</div></div>
+            <div class="col-6"><span class="detail-label">ISA Sender</span>
+                <div>@Model.EdiSndisa</div></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Quick Actions</div>
+        @if (Model.EdiDoc2 == "850" && Model.EdiDir == "IN")
+        {
+            <p class="text-muted small mb-2">This inbound 850 was automatically processed into a Sales Order.</p>
+        }
+        @if (Model.EdiDoc2 == "810" || Model.EdiDoc2 == "856")
+        {
+            <p class="text-muted small mb-2">Outbound document generated from ZaffreMeld.</p>
+        }
+        <a asp-action="Index" asp-route-partner="@Model.EdiPartner" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-clock-history me-1"></i>Partner History
+        </a>
+    </div></div>
+</div>

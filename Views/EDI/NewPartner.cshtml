@@ -1,0 +1,56 @@
+@using ZaffreMeld.Web.Models.EDI
+@model EdpPartner
+@{ ViewData["Title"] = "New Trading Partner"; }
+<div class="page-header">
+    <a asp-action="Partners" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-person-plus me-2 text-primary"></i>New Trading Partner</h4>
+</div>
+<form method="post" asp-action="NewPartner">
+<div class="row g-3">
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">Identity</div>
+        <div class="row g-2">
+            <div class="col-5"><label class="form-label small">Partner ID *</label>
+                <input name="EdpId" class="form-control form-control-sm" required
+                       placeholder="e.g. ACME" style="text-transform:uppercase"/></div>
+            <div class="col-7"><label class="form-label small">Description *</label>
+                <input name="EdpDesc" class="form-control form-control-sm" required
+                       placeholder="Acme Corporation"/></div>
+            <div class="col-4"><label class="form-label small">Type</label>
+                <select name="EdpType" class="form-select form-select-sm">
+                    <option value="customer">Customer</option>
+                    <option value="vendor">Vendor</option>
+                    <option value="3pl">3PL</option>
+                </select></div>
+            <div class="col-4"><label class="form-label small">Site</label>
+                <input name="EdpSite" class="form-control form-control-sm" value="DEFAULT"/></div>
+            <div class="col-4"><label class="form-label small">Active</label>
+                <select name="EdpActive" class="form-select form-select-sm">
+                    <option value="true">Yes</option><option value="false">No</option>
+                </select></div>
+        </div>
+    </div></div>
+    <div class="col-md-6"><div class="form-section">
+        <div class="form-section-title">X12 Identifiers</div>
+        <div class="row g-2">
+            <div class="col-12 small text-muted mb-1">These must match the ISA06/GS02 values in the partner's EDI envelope.</div>
+            <div class="col-6"><label class="form-label small">ISA ID (ISA06) *</label>
+                <input name="EdpIsa" class="form-control form-control-sm font-monospace" required
+                       placeholder="ACMEPARTNER"/></div>
+            <div class="col-6"><label class="form-label small">GS ID (GS02) *</label>
+                <input name="EdpGs" class="form-control form-control-sm font-monospace" required
+                       placeholder="ACMEPARTNER"/></div>
+            <div class="col-6"><label class="form-label small">FTP Profile</label>
+                <input name="EdpFtpid" class="form-control form-control-sm" placeholder="Optional"/></div>
+            <div class="col-6"><label class="form-label small">AS2 ID</label>
+                <input name="EdpAs2id" class="form-control form-control-sm" placeholder="Optional"/></div>
+            <div class="col-12"><label class="form-label small">Notes</label>
+                <textarea name="EdpNote" class="form-control form-control-sm" rows="2"></textarea></div>
+        </div>
+    </div></div>
+</div>
+<div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Partner</button>
+    <a asp-action="Partners" class="btn btn-outline-secondary">Cancel</a>
+</div>
+</form>

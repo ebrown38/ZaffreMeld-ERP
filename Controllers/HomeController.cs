@@ -1,6 +1,6 @@
+using ZaffreMeld.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ZaffreMeld.Web.Services;
 
 namespace ZaffreMeld.Web.Controllers;
 
@@ -74,7 +74,7 @@ public class AccountController : Controller
             return View();
         }
 
-        Response.Cookies.Append("bs_token", token, new CookieOptions
+        Response.Cookies.Append("zm_token", token, new CookieOptions
         {
             HttpOnly = true,
             Secure = Request.IsHttps,
@@ -90,7 +90,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _auth.LogoutAsync(User.Identity?.Name ?? string.Empty);
-        Response.Cookies.Delete("bs_token");
+        Response.Cookies.Delete("zm_token");
         return Redirect("/login");
     }
 }

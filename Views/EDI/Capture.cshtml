@@ -1,0 +1,97 @@
+@using ZaffreMeld.Web.Models.EDI
+@{ ViewData["Title"] = "Capture Inbound EDI"; }
+<div class="page-header">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-cloud-upload me-2 text-primary"></i>Capture Inbound EDI</h4>
+</div>
+
+@if (TempData["Error"] != null)
+{ <div class="alert alert-danger alert-dismissible"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>@TempData["Error"]</div> }
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="form-section">
+            <div class="form-section-title">Paste Raw X12 Document</div>
+            <form method="post" asp-action="Capture">
+                <div class="row g-2 mb-3">
+                    <div class="col-sm-5">
+                        <label class="form-label small">Trading Partner *</label>
+                        <select name="partner" class="form-select form-select-sm" required>
+                            <option value="">-- Select Partner --</option>
+                            @foreach (EdpPartner p in (ViewBag.Partners as IEnumerable<EdpPartner> ?? Array.Empty<EdpPartner>()))
+                            { <option value="@p.EdpId">@p.EdpId — @p.EdpDesc</option> }
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="form-label small">Site</label>
+                        <input name="site" class="form-control form-control-sm" value="DEFAULT"/>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Raw X12 *</label>
+                    <textarea name="raw" class="form-control form-control-sm font-monospace"
+                              rows="16" required placeholder="ISA*00*          *00*          *ZZ*PARTNERID..."></textarea>
+                    <div class="form-text small">Paste the full X12 document including ISA through IEA. Supported: 850, 997.</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-play-fill me-1"></i>Process</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="loadSample()">Load Sample 850</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-section">
+            <div class="form-section-title">Supported Inbound Docs</div>
+            <table class="table table-sm table-borderless mb-0">
+                <tbody>
+                    <tr><td><span class="badge bg-primary">850</span></td><td>Purchase Order → creates Sales Order</td></tr>
+                    <tr><td><span class="badge bg-secondary">997</span></td><td>Functional Acknowledgment → logs status</td></tr>
+                </tbody>
+            </table>
+            <hr class="my-3"/>
+            <div class="form-section-title">Mapping Flow</div>
+            <div class="small text-muted">
+                <div class="mb-1"><i class="bi bi-1-circle me-1"></i>Parse ISA/GS/ST envelope</div>
+                <div class="mb-1"><i class="bi bi-2-circle me-1"></i>Identify doc type &amp; trading partner</div>
+                <div class="mb-1"><i class="bi bi-3-circle me-1"></i>Resolve ISA ID → customer via xref table</div>
+                <div class="mb-1"><i class="bi bi-4-circle me-1"></i>Map BEG/PO1 segments → SO header + lines</div>
+                <div class="mb-1"><i class="bi bi-5-circle me-1"></i>Create SO, log transaction, generate 997 FA</div>
+            </div>
+        </div>
+        <div class="form-section mt-3">
+            <div class="form-section-title">API Endpoint</div>
+            <code class="small">POST /api/edi/inbound</code>
+            <pre class="small mt-2 bg-light p-2 rounded">{
+  "raw": "ISA*...",
+  "partner": "ACME",
+  "site": "DEFAULT"
+}</pre>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+const sample850 = `ISA*00*          *00*          *ZZ*ACMEPARTNER    *ZZ*ZAFFREMELD       *260301*1200*^*00501*000000001*0*P*:~
+GS*PO*ACMEPARTNER*ZAFFREMELD*20260301*1200*1*X*005010~
+ST*850*0001~
+BEG*00*SA*PO-98765**20260301~
+REF*DP*DEPT-47~
+DTM*002*20260315~
+N1*BY*ACME CORPORATION*92*ACMEPARTNER~
+N1*ST*ACME WAREHOUSE*92*ACMEPARTNER~
+N3*100 INDUSTRIAL BLVD~
+N4*HOUSTON*TX*77001~
+PO1*1*10*EA*25.00*PE*BP*WIDGET-100*VN*WDG-100~
+PID*F****Blue Widget 100 Pack~
+PO1*2*5*EA*49.99*PE*BP*GADGET-200*VN*GDG-200~
+PID*F****Premium Gadget Set~
+CTT*2~
+SE*15*0001~
+GE*1*1~
+IEA*1*000000001~`;
+function loadSample() {
+    document.querySelector('textarea[name="raw"]').value = sample850;
+}
+</script>
+}
