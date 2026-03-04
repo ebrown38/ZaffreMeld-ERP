@@ -56,6 +56,7 @@ public class ZaffreMeldRole : IdentityRole
 /// </summary>
 public class UserMstr
 {
+    [Key]
     public string UserId { get; set; } = string.Empty;
     public string UserSite { get; set; } = string.Empty;
     public string UserLname { get; set; } = string.Empty;
@@ -74,7 +75,7 @@ public class UserMstr
 /// </summary>
 public class SiteMstr
 {
-    public int SiteMstrId { get; set; }
+    public int  SiteMstrId { get; set; }
     public string SiteSite { get; set; } = string.Empty;
     public string SiteDesc { get; set; } = string.Empty;
     public string SiteLine1 { get; set; } = string.Empty;
@@ -117,6 +118,7 @@ public class OvCtrl
 /// <summary>code_mstr — Code/lookup table (replaces Java code_mstr)</summary>
 public class CodeMstr
 {
+    public int CodeMstrId { get; set; }
     public string CodeCode { get; set; } = string.Empty;
     public string CodeKey { get; set; } = string.Empty;
     public string CodeValue { get; set; } = string.Empty;

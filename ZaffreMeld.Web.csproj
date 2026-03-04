@@ -4,8 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ZaffreMeld.Web</RootNamespace>
+    <AssemblyName>ZaffreMeld.Web</AssemblyName>
     <UserSecretsId>zaffremeld-aspnetcore</UserSecretsId>
-    <PackageId>ZaffreMeld.Web</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,10 +46,6 @@
 
     <!-- FluentValidation -->
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

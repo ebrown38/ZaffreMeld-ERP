@@ -1,8 +1,8 @@
+using ZaffreMeld.Web.Data;
+using ZaffreMeld.Web.Models.HR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ZaffreMeld.Web.Data;
-using ZaffreMeld.Web.Models.HR;
 
 namespace ZaffreMeld.Web.Controllers;
 

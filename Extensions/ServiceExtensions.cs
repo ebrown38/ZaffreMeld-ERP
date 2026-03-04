@@ -19,6 +19,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ZaffreMeld.Web.Services.EDI.IEdiService,
+                           ZaffreMeld.Web.Services.EDI.EdiService>();
 
         return services;
     }

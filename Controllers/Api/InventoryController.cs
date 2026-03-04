@@ -1,8 +1,8 @@
+using ZaffreMeld.Web.Models.Inventory;
+using ZaffreMeld.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ZaffreMeld.Web.Models.Inventory;
-using ZaffreMeld.Web.Services;
 
 namespace ZaffreMeld.Web.Controllers.Api;
 

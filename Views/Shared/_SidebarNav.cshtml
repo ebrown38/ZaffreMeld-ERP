@@ -113,6 +113,32 @@
         </a>
     </li>
 
+    <div class="sidebar-section">EDI</div>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Edi" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+           asp-controller="Edi" asp-action="Index">
+            <i class="bi bi-arrow-left-right"></i> Transactions
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Edi" && ViewContext.RouteData.Values["action"]?.ToString() == "Capture" ? "active" : "")"
+           asp-controller="Edi" asp-action="Capture">
+            <i class="bi bi-cloud-upload"></i> Capture Inbound
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Edi" && ViewContext.RouteData.Values["action"]?.ToString() == "Generate" ? "active" : "")"
+           asp-controller="Edi" asp-action="Generate">
+            <i class="bi bi-cloud-download"></i> Generate Outbound
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Edi" && ViewContext.RouteData.Values["action"]?.ToString() == "Partners" ? "active" : "")"
+           asp-controller="Edi" asp-action="Partners">
+            <i class="bi bi-people"></i> Trading Partners
+        </a>
+    </li>
+
     <div class="sidebar-section">Administration</div>
     <li class="nav-item">
         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")"

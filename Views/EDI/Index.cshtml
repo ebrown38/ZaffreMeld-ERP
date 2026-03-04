@@ -1,0 +1,88 @@
+@using ZaffreMeld.Web.Models.EDI
+@{ ViewData["Title"] = "EDI Transactions"; }
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-arrow-left-right me-2 text-primary"></i>EDI Transactions</h4>
+    <div class="d-flex gap-2">
+        <a asp-action="Capture" class="btn btn-sm btn-outline-primary"><i class="bi bi-cloud-upload me-1"></i>Capture Inbound</a>
+        <a asp-action="Generate" class="btn btn-sm btn-outline-success"><i class="bi bi-cloud-download me-1"></i>Generate Outbound</a>
+        <a asp-action="Partners" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people me-1"></i>Partners</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{ <div class="alert alert-success alert-dismissible"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>@TempData["Success"]</div> }
+@if (TempData["Error"] != null)
+{ <div class="alert alert-danger alert-dismissible"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>@TempData["Error"]</div> }
+
+<div class="card mb-3"><div class="card-body py-2">
+<form method="get" class="row g-2 align-items-end">
+    <div class="col-sm-3">
+        <label class="form-label small mb-1">Partner</label>
+        <select name="partner" class="form-select form-select-sm">
+            <option value="">All Partners</option>
+            @foreach (EdpPartner p in (ViewBag.Partners as IEnumerable<EdpPartner> ?? Array.Empty<EdpPartner>()))
+            { <option value="@p.EdpId" selected="@(ViewBag.Partner==(string)p.EdpId)">@p.EdpId — @p.EdpDesc</option> }
+        </select>
+    </div>
+    <div class="col-sm-2">
+        <label class="form-label small mb-1">Doc Type</label>
+        <select name="docType" class="form-select form-select-sm">
+            <option value="">All</option>
+            <option value="850" selected="@(ViewBag.DocType=="850")">850 PO</option>
+            <option value="810" selected="@(ViewBag.DocType=="810")">810 Invoice</option>
+            <option value="856" selected="@(ViewBag.DocType=="856")">856 ASN</option>
+            <option value="997" selected="@(ViewBag.DocType=="997")">997 FA</option>
+        </select>
+    </div>
+    <div class="col-sm-2">
+        <label class="form-label small mb-1">Direction</label>
+        <select name="dir" class="form-select form-select-sm">
+            <option value="">All</option>
+            <option value="IN" selected="@(ViewBag.Dir=="IN")">Inbound</option>
+            <option value="OUT" selected="@(ViewBag.Dir=="OUT")">Outbound</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-filter"></i> Filter</button>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+    </div>
+</form>
+</div></div>
+
+<div class="browse-table-wrapper">
+<table class="table table-sm table-hover mb-0">
+    <thead><tr>
+        <th>Timestamp</th><th>ID</th><th>Doc Type</th><th>Dir</th>
+        <th>Partner</th><th>Status</th><th>Site</th><th></th>
+    </tr></thead>
+    <tbody>
+    @foreach (EdiMstr tx in (ViewBag.History as IEnumerable<EdiMstr> ?? Array.Empty<EdiMstr>()))
+    {
+        <tr>
+            <td class="text-nowrap small">@tx.EdiTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            <td class="small">@tx.EdiId</td>
+            <td>
+                <span class="badge bg-light text-dark border">@tx.EdiDoc2</span>
+                <span class="text-muted small">@(tx.EdiDoc2 switch {"850"=>"PO","810"=>"Invoice","856"=>"ASN","997"=>"FA",_=>""})</span>
+            </td>
+            <td>
+                @if (tx.EdiDir == "IN")
+                { <span class="badge badge-open"><i class="bi bi-arrow-down me-1"></i>IN</span> }
+                else
+                { <span class="badge badge-closed"><i class="bi bi-arrow-up me-1"></i>OUT</span> }
+            </td>
+            <td>@tx.EdiPartner</td>
+            <td>
+                <span class="badge @(tx.EdiStatus=="A"?"badge-active":tx.EdiStatus=="E"?"badge-inactive":"badge-hold")">
+                    @(tx.EdiStatus switch {"A"=>"Accepted","E"=>"Error","R"=>"Rejected",_=>tx.EdiStatus})
+                </span>
+            </td>
+            <td>@tx.EdiSite</td>
+            <td><a asp-action="Transaction" asp-route-id="@tx.Id" class="btn btn-xs btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    @if (!(ViewBag.History as IEnumerable<EdiMstr> ?? Array.Empty<EdiMstr>()).Any())
+    { <tr><td colspan="8" class="text-center text-muted py-4">No EDI transactions found</td></tr> }
+    </tbody>
+</table>
+</div>

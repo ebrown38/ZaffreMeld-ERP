@@ -1,0 +1,86 @@
+@using ZaffreMeld.Web.Models.EDI
+@{ ViewData["Title"] = "Generate Outbound EDI"; }
+<div class="page-header">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="d-inline"><i class="bi bi-cloud-download me-2 text-success"></i>Generate Outbound EDI</h4>
+</div>
+
+@if (TempData["Success"] != null)
+{ <div class="alert alert-success alert-dismissible"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>@TempData["Success"]</div> }
+@if (TempData["Error"] != null)
+{ <div class="alert alert-danger alert-dismissible"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>@TempData["Error"]</div> }
+
+@if (TempData["GeneratedX12"] != null)
+{
+<div class="form-section mb-3">
+    <div class="form-section-title d-flex justify-content-between">
+        Generated X12
+        <button class="btn btn-xs btn-outline-secondary" onclick="copyX12()"><i class="bi bi-clipboard"></i> Copy</button>
+    </div>
+    <pre id="x12out" class="small bg-light p-3 rounded" style="max-height:300px;overflow-y:auto;white-space:pre-wrap">@TempData["GeneratedX12"]</pre>
+</div>
+}
+
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="form-section">
+            <div class="form-section-title"><span class="badge bg-warning text-dark me-2">810</span>Generate Invoice</div>
+            <form method="post" asp-action="Generate810">
+                <div class="mb-2">
+                    <label class="form-label small">AR Invoice ID *</label>
+                    <input name="arId" class="form-control form-control-sm" placeholder="IN-001000" required/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Trading Partner *</label>
+                    <select name="partner" class="form-select form-select-sm" required>
+                        <option value="">-- Select --</option>
+                        @foreach (EdpPartner p in (ViewBag.Partners as IEnumerable<EdpPartner> ?? Array.Empty<EdpPartner>()))
+                        { <option value="@p.EdpId">@p.EdpId — @p.EdpDesc</option> }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-sm btn-warning">
+                    <i class="bi bi-send me-1"></i>Generate 810
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="form-section">
+            <div class="form-section-title"><span class="badge bg-info me-2">856</span>Generate Ship Notice</div>
+            <form method="post" asp-action="Generate856">
+                <div class="mb-2">
+                    <label class="form-label small">Shipper ID *</label>
+                    <input name="shipId" class="form-control form-control-sm" placeholder="SH-001000" required/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Trading Partner *</label>
+                    <select name="partner" class="form-select form-select-sm" required>
+                        <option value="">-- Select --</option>
+                        @foreach (EdpPartner p in (ViewBag.Partners as IEnumerable<EdpPartner> ?? Array.Empty<EdpPartner>()))
+                        { <option value="@p.EdpId">@p.EdpId — @p.EdpDesc</option> }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-sm btn-info text-white">
+                    <i class="bi bi-send me-1"></i>Generate 856
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-section">
+            <div class="form-section-title">Doc Types</div>
+            <table class="table table-sm table-borderless small mb-0">
+                <tr><td><span class="badge bg-warning text-dark">810</span></td><td>Invoice</td></tr>
+                <tr><td><span class="badge bg-info text-white">856</span></td><td>ASN</td></tr>
+                <tr><td><span class="badge bg-secondary">997</span></td><td>Auto FA</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+function copyX12() {
+    navigator.clipboard.writeText(document.getElementById('x12out').innerText);
+}
+</script>
+}

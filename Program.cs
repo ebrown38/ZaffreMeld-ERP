@@ -89,7 +89,15 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["bs_token"];
+            context.Token = context.Request.Cookies["zm_token"];
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api")) return Task.CompletedTask;
+            context.HandleResponse();
+            var returnUrl = context.Request.Path + context.Request.QueryString;
+            context.Response.Redirect($"/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
             return Task.CompletedTask;
         }
     };
@@ -110,7 +118,7 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Name = "bs_session";
+    options.Cookie.Name = "zm_session";
 });
 
 // ─── Application Services ─────────────────────────────────────────────────────
