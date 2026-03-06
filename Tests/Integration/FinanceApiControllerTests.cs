@@ -27,11 +27,11 @@ public class FinanceApiControllerTests : IDisposable
         // Default happy-path setups
         _svcMock.Setup(s => s.GetAccount(It.IsAny<string>()))
             .ReturnsAsync((string id) => _db.AcctMstr.Find(id));
+        var allAccounts = _db.AcctMstr.OrderBy(a => a.Id).ToList();
         _svcMock.Setup(s => s.GetAccountsInRange(It.IsAny<string>(), It.IsAny<string>()))
             .Returns((string f, string t) => Task.FromResult(
-                _db.AcctMstr
-                    .Where(a => string.Compare(a.Id, f) >= 0 && string.Compare(a.Id, t) <= 0)
-                    .OrderBy(a => a.Id).ToList()));
+                allAccounts.Where(a => string.Compare(a.Id, f) >= 0 && string.Compare(a.Id, t) <= 0)
+                    .ToList()));
         _svcMock.Setup(s => s.AddAccount(It.IsAny<AcctMstr>()))
             .ReturnsAsync(ServiceResult.Ok("Account added successfully."));
         _svcMock.Setup(s => s.UpdateAccount(It.IsAny<AcctMstr>()))
