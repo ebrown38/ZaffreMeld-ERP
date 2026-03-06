@@ -207,8 +207,8 @@ public class EdiServiceTests : IDisposable
 
         var result = await _svc.Generate810("INV-002", "ACME");
 
-        var data = result.Data as dynamic;
-        Anon.Prop<string>(data, "X12").Should().Contain("BIG*");
+        var x12 = Anon.Prop<string>(result.Data, "X12");
+        x12.Should().Contain("BIG*");
     }
 
     [Fact]
@@ -260,8 +260,8 @@ public class EdiServiceTests : IDisposable
 
         var result = await _svc.Generate856("SH-002", "ACME");
 
-        var data = result.Data as dynamic;
-        Anon.Prop<string>(data, "X12").Should().Contain("BSN*");
+        var x12 = Anon.Prop<string>(result.Data, "X12");
+        x12.Should().Contain("BSN*");
     }
 
     [Fact]

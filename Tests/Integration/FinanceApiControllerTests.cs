@@ -28,9 +28,10 @@ public class FinanceApiControllerTests : IDisposable
         _svcMock.Setup(s => s.GetAccount(It.IsAny<string>()))
             .ReturnsAsync((string id) => _db.AcctMstr.Find(id));
         _svcMock.Setup(s => s.GetAccountsInRange(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string f, string t) => _db.AcctMstr
-                .Where(a => string.Compare(a.Id, f) >= 0 && string.Compare(a.Id, t) <= 0)
-                .OrderBy(a => a.Id).ToList());
+            .Returns((string f, string t) => Task.FromResult(
+                _db.AcctMstr
+                    .Where(a => string.Compare(a.Id, f) >= 0 && string.Compare(a.Id, t) <= 0)
+                    .OrderBy(a => a.Id).ToList()));
         _svcMock.Setup(s => s.AddAccount(It.IsAny<AcctMstr>()))
             .ReturnsAsync(ServiceResult.Ok("Account added successfully."));
         _svcMock.Setup(s => s.UpdateAccount(It.IsAny<AcctMstr>()))
@@ -308,8 +309,8 @@ public class FinanceApiControllerTests : IDisposable
     public void GetArLines_ReturnsLinesForInvoice()
     {
         _db.ArdMstr.AddRange(
-            new ArdMstr { ArdNbr = "INV-002", ArdLine = 1, ArdItem = "WIDGET-100", ArdAmt = 250m },
-            new ArdMstr { ArdNbr = "INV-002", ArdLine = 2, ArdItem = "GADGET-200", ArdAmt = 250m }
+            new ArdMstr { ArdId = "INV-002-1", ArdNbr = "INV-002", ArdLine = 1, ArdItem = "WIDGET-100", ArdAmt = 250m },
+            new ArdMstr { ArdId = "INV-002-2", ArdNbr = "INV-002", ArdLine = 2, ArdItem = "GADGET-200", ArdAmt = 250m }
         );
         _db.SaveChanges();
 

@@ -337,7 +337,9 @@ public class ProductionController : ControllerBase
         var jc = await _db.JobClocks.FindAsync(clockId);
         if (jc == null) return NotFound();
 
-        jc.JobcTimeout = DateTime.Now.ToString("HH:mm:ss");
+        jc.JobcTimeout = string.IsNullOrEmpty(jc.JobcTimeout)
+            ? DateTime.Now.ToString("HH:mm:ss")
+            : jc.JobcTimeout;
         jc.JobcQty = req.Qty;
 
         // Calculate hours

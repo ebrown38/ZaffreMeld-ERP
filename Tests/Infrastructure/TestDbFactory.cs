@@ -90,9 +90,9 @@ public static class Anon
     public static T Prop<T>(object? obj, string name)
     {
         ArgumentNullException.ThrowIfNull(obj);
-        var val = obj.GetType().GetProperty(name)?.GetValue(obj)
-                  ?? throw new InvalidOperationException($"Property '{name}' not found on {obj.GetType().Name}");
-        return (T)val;
+        var prop = obj.GetType().GetProperty(name)
+                   ?? throw new InvalidOperationException($"Property '{name}' not found on {obj.GetType().Name}");
+        return (T)prop.GetValue(obj)!;
     }
 }
 

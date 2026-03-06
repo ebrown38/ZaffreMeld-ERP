@@ -304,11 +304,14 @@ public class InventoryService : IInventoryService
         => await _db.ItemMstr.FindAsync(itemId);
 
     public async Task<List<ItemMstr>> SearchItems(string search, int maxResults = 50)
-        => await _db.ItemMstr
-            .Where(i => i.ItItem.Contains(search) || i.ItDesc.Contains(search))
+    {
+        var lower = search.ToLower();
+        return await _db.ItemMstr
+            .Where(i => i.ItItem.ToLower().Contains(lower) || i.ItDesc.ToLower().Contains(lower))
             .OrderBy(i => i.ItItem)
             .Take(maxResults)
             .ToListAsync();
+    }
 
     public async Task<ServiceResult> AddItem(ItemMstr item)
     {

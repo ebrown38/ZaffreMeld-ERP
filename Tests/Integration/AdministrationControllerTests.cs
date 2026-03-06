@@ -92,18 +92,18 @@ public class AdministrationControllerTests : IDisposable
         var result = await _ctrl.AddSite(site);
 
         result.Should().BeOfType<OkObjectResult>();
-        _db.Sites.Find("EAST").Should().NotBeNull();
+        _db.Sites.FirstOrDefault(s => s.SiteSite == "EAST").Should().NotBeNull();
     }
 
     [Fact]
     public async Task UpdateSite_ChangesDescription()
     {
-        var site = _db.Sites.Find("DEFAULT")!;
+        var site = _db.Sites.FirstOrDefault(s => s.SiteSite == "DEFAULT")!;
         site.SiteDesc = "Main Site (Updated)";
 
         await _ctrl.UpdateSite("DEFAULT", site);
 
-        _db.Sites.Find("DEFAULT")!.SiteDesc.Should().Be("Main Site (Updated)");
+        _db.Sites.FirstOrDefault(s => s.SiteSite == "DEFAULT")!.SiteDesc.Should().Be("Main Site (Updated)");
     }
 
     // ── Code Master ────────────────────────────────────────────────────────────
@@ -151,7 +151,7 @@ public class AdministrationControllerTests : IDisposable
         var result = await _ctrl.DeleteCode("CARRIER", "FEDEX");
 
         result.Should().BeOfType<OkObjectResult>();
-        _db.CodeMstr.Find("CARRIER", "FEDEX").Should().BeNull();
+        _db.CodeMstr.FirstOrDefault(c => c.CodeCode == "CARRIER" && c.CodeKey == "FEDEX").Should().BeNull();
     }
 
     [Fact]

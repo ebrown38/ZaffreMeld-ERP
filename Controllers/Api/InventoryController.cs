@@ -194,7 +194,7 @@ public class InventoryController : ControllerBase
     {
         var fromUom = await _db.UomMstr.FindAsync(id);
         var targetUom = await _db.UomMstr.FindAsync(toUom);
-        if (fromUom == null || targetUom == null) return NotFound("UOM not found.");
+        if (fromUom == null || targetUom == null) return NotFound();
 
         var convertedQty = qty * fromUom.UomConvFactor / targetUom.UomConvFactor;
         return Ok(new { fromUom = id, toUom, originalQty = qty, convertedQty });
