@@ -30,7 +30,9 @@ public class FinanceApiControllerTests : IDisposable
         var allAccounts = _db.AcctMstr.OrderBy(a => a.Id).ToList();
         _svcMock.Setup(s => s.GetAccountsInRange(It.IsAny<string>(), It.IsAny<string>()))
             .Returns((string f, string t) => Task.FromResult(
-                allAccounts.Where(a => string.Compare(a.Id, f) >= 0 && string.Compare(a.Id, t) <= 0)
+                allAccounts
+                    .Where(a => string.Compare(a.Id, f, StringComparison.Ordinal) >= 0
+                             && string.Compare(a.Id, t, StringComparison.Ordinal) <= 0)
                     .ToList()));
         _svcMock.Setup(s => s.AddAccount(It.IsAny<AcctMstr>()))
             .ReturnsAsync(ServiceResult.Ok("Account added successfully."));
