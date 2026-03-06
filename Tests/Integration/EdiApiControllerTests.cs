@@ -219,8 +219,8 @@ public class EdiApiControllerTests
         var result = await _ctrl.Generate997(req) as OkObjectResult;
 
         result.Should().NotBeNull();
-        var body = result!.Value as dynamic;
-        ((string)body!.X12).Should().Contain("ISA");
+        var body = result!.Value;
+        Anon.Prop<string>(body, "X12").Should().Contain("ISA");
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class EdiApiControllerTests
             .ReturnsAsync(new List<EdiMstr> { new() { EdiId = "TX-001", EdiDoc2 = "850", EdiPartner = "ACME", EdiDir = "IN", EdiStatus = "A", EdiSite = "DEFAULT" } });
 
         var result = await _ctrl.GetHistory() as OkObjectResult;
-        ((List<EdiMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<EdiMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class EdiApiControllerTests
     public async Task GetPartners_Returns200WithList()
     {
         var result = await _ctrl.GetPartners() as OkObjectResult;
-        ((List<EdpPartner>)result!.Value!).Should().HaveCount(1);
+        ((List<EdpPartner>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]

@@ -10,7 +10,6 @@ using ZaffreMeld.Web.Data;
 using ZaffreMeld.Web.Models.Administration;
 using ZaffreMeld.Web.Services;
 using System.Security.Claims;
-using ZaffreMeld.Tests.Infrastructure;
 
 namespace ZaffreMeld.Tests.Integration;
 
@@ -66,7 +65,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetSites_ReturnsBothSites_OrderedBySiteCode()
     {
         var result = _ctrl.GetSites() as OkObjectResult;
-        var sites  = (List<SiteMstr>)result!.Value!;
+        var sites  = ((List<SiteMstr>)result.Value!);
         sites.Should().HaveCount(2);
         sites[0].SiteSite.Should().Be("DEFAULT");
         sites[1].SiteSite.Should().Be("WEST");
@@ -76,7 +75,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetSite_ExistingId_Returns200()
     {
         var result = _ctrl.GetSite("DEFAULT") as OkObjectResult;
-        ((SiteMstr)result!.Value!).SiteDesc.Should().Be("Main Site");
+        ((SiteMstr)result.Value!).SiteDesc.Should().Be("Main Site");
     }
 
     [Fact]
@@ -113,7 +112,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetCodes_NoFilter_ReturnsAll()
     {
         var result = _ctrl.GetCodes() as OkObjectResult;
-        var codes  = (List<CodeMstr>)result!.Value!;
+        var codes  = ((List<CodeMstr>)result.Value!);
         codes.Should().HaveCount(3);
     }
 
@@ -121,7 +120,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetCodes_FilterByCode_ReturnsMatchingGroup()
     {
         var result = _ctrl.GetCodes(code: "TERMS") as OkObjectResult;
-        var codes  = (List<CodeMstr>)result!.Value!;
+        var codes  = ((List<CodeMstr>)result.Value!);
         codes.Should().HaveCount(2);
         codes.Should().OnlyContain(c => c.CodeCode == "TERMS");
     }
@@ -130,7 +129,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetCodes_FilterByCode_OrderedByCodeThenKey()
     {
         var result = _ctrl.GetCodes(code: "TERMS") as OkObjectResult;
-        var codes  = (List<CodeMstr>)result!.Value!;
+        var codes  = ((List<CodeMstr>)result.Value!);
         codes[0].CodeKey.Should().Be("NET30");
         codes[1].CodeKey.Should().Be("NET60");
     }
@@ -167,7 +166,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetMenu_ExcludesInactiveItems()
     {
         var result = _ctrl.GetMenu() as OkObjectResult;
-        var items  = (List<MenuMstr>)result!.Value!;
+        var items  = ((List<MenuMstr>)result.Value!);
         items.Should().NotContain(m => m.MenuId == "MENU-003"); // active=0
     }
 
@@ -175,7 +174,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetMenu_FiltersByRole()
     {
         var result = _ctrl.GetMenu(role: "finance") as OkObjectResult;
-        var items  = (List<MenuMstr>)result!.Value!;
+        var items  = ((List<MenuMstr>)result.Value!);
         // "finance" role gets items where role=="finance" OR role==""
         items.Should().OnlyContain(m => m.MenuRole == "finance" || m.MenuRole == "");
     }
@@ -184,7 +183,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetMenu_OrdersByParentThenSeq()
     {
         var result = _ctrl.GetMenu() as OkObjectResult;
-        var items  = (List<MenuMstr>)result!.Value!;
+        var items  = ((List<MenuMstr>)result.Value!);
         // Parent "" should come before "MENU-001"
         items.First().MenuParent.Should().Be("");
     }
@@ -195,7 +194,7 @@ public class AdministrationControllerTests : IDisposable
     public void GetCounters_ReturnsSeededCounter()
     {
         var result = _ctrl.GetCounters() as OkObjectResult;
-        var counters = (List<Counter>)result!.Value!;
+        var counters = ((List<Counter>)result.Value!);
         counters.Should().Contain(c => c.CounterName == "SO");
     }
 
@@ -203,8 +202,8 @@ public class AdministrationControllerTests : IDisposable
     public async Task GetNextNumber_ReturnsFromAppService()
     {
         var result = await _ctrl.GetNextNumber("SO") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((string)body!.next).Should().Be("SO-001001");
+        var body   = result!.Value;
+        Anon.Prop<string>(body, "next").Should().Be("SO-001001");
         _appMock.Verify(a => a.GetNextDocumentNumber("SO"), Times.Once);
     }
 
@@ -224,32 +223,32 @@ public class AdministrationControllerTests : IDisposable
     public void GetChangeLog_ReturnsAllLogs()
     {
         var result = _ctrl.GetChangeLog() as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(2);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(2);
     }
 
     [Fact]
     public void GetChangeLog_FiltersByTable()
     {
         var result = _ctrl.GetChangeLog(table: "SoMstr") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
     public void GetChangeLog_FiltersByUser()
     {
         var result = _ctrl.GetChangeLog(user: "user1") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
     public void GetChangeLog_ReturnsNewestFirst()
     {
         var result  = _ctrl.GetChangeLog() as OkObjectResult;
-        var body    = result!.Value as dynamic;
-        var logs    = (List<ChangeLog>)body!.logs;
+        var body    = result!.Value;
+        var logs    = Anon.Prop<List<ChangeLog>>(body, "logs");
         logs[0].ClTable.Should().Be("ItemMstr"); // newer
         logs[1].ClTable.Should().Be("SoMstr");   // older
     }
@@ -258,9 +257,9 @@ public class AdministrationControllerTests : IDisposable
     public void GetChangeLog_Pagination_RespectsPageSize()
     {
         var result = _ctrl.GetChangeLog(pageSize: 1) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(2);        // total unchanged
-        ((List<ChangeLog>)body!.logs).Should().HaveCount(1); // only 1 page
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(2);        // total unchanged
+        Anon.Prop<List<ChangeLog>>(body, "logs").Should().HaveCount(1); // only 1 page
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ using Xunit;
 using ZaffreMeld.Web.Controllers.Api;
 using ZaffreMeld.Web.Services;
 using System.Security.Claims;
+using ZaffreMeld.Tests.Infrastructure;
 
 namespace ZaffreMeld.Tests.Unit;
 
@@ -38,9 +39,9 @@ public class AuthControllerTests
         var result = await _ctrl.Login(new LoginRequest("admin", "pass123")) as OkObjectResult;
 
         result.Should().NotBeNull();
-        var body = result!.Value as dynamic;
-        ((bool)body!.success).Should().BeTrue();
-        ((string)body!.token).Should().Be("jwt-token-abc");
+        var body = result!.Value;
+        Anon.Prop<bool>(body, "success").Should().BeTrue();
+        Anon.Prop<string>(body, "token").Should().Be("jwt-token-abc");
     }
 
     [Fact]
@@ -150,9 +151,9 @@ public class AuthControllerTests
         SetAuthenticatedUser(_ctrl, "admin");
 
         var result = await _ctrl.Logout() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((string)body!.message).Should().Contain("Logged out");
+        Anon.Prop<string>(body, "message").Should().Contain("Logged out");
     }
 
     // ── Ping ───────────────────────────────────────────────────────────────────
@@ -163,10 +164,10 @@ public class AuthControllerTests
         SetAuthenticatedUser(_ctrl, "testuser", site: "DEFAULT", userType: "admin");
 
         var result = _ctrl.Ping() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((bool)body!.success).Should().BeTrue();
-        ((string)body!.user).Should().Be("testuser");
+        Anon.Prop<bool>(body, "success").Should().BeTrue();
+        Anon.Prop<string>(body, "user").Should().Be("testuser");
     }
 
     [Fact]
@@ -175,9 +176,9 @@ public class AuthControllerTests
         SetAuthenticatedUser(_ctrl, "testuser", site: "WEST");
 
         var result = _ctrl.Ping() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((string)body!.site).Should().Be("WEST");
+        Anon.Prop<string>(body, "site").Should().Be("WEST");
     }
 
     [Fact]
@@ -186,9 +187,9 @@ public class AuthControllerTests
         SetAuthenticatedUser(_ctrl, "testuser", userType: "finance");
 
         var result = _ctrl.Ping() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((string)body!.userType).Should().Be("finance");
+        Anon.Prop<string>(body, "userType").Should().Be("finance");
     }
 
     [Fact]
@@ -197,9 +198,9 @@ public class AuthControllerTests
         SetAuthenticatedUser(_ctrl, "testuser"); // no site claim
 
         var result = _ctrl.Ping() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((object?)body!.site).Should().BeNull();
+        Anon.Prop<object?>(body, "site").Should().BeNull();
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

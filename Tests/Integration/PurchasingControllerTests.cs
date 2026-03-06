@@ -139,8 +139,8 @@ public class PurchasingControllerTests : IDisposable
         var result = _ctrl.GetPurchaseOrder("PO-GET") as OkObjectResult;
 
         result.Should().NotBeNull();
-        var body = result!.Value as dynamic;
-        ((object)body!.header).Should().NotBeNull();
+        var body = result!.Value;
+        Anon.Prop<object>(body, "header").Should().NotBeNull();
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class PurchasingControllerTests : IDisposable
         await _ctrl.CreatePurchaseOrder(BuildPoRequest("PO-V2", vend: "VENDOR-B"));
 
         var result = _ctrl.GetPurchaseOrders(vend: "VENDOR-A") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
@@ -170,8 +170,8 @@ public class PurchasingControllerTests : IDisposable
         await _ctrl.CreatePurchaseOrder(BuildPoRequest("PO-OPEN2"));
 
         var result = _ctrl.GetPurchaseOrders(status: "O") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
@@ -183,9 +183,9 @@ public class PurchasingControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetPurchaseOrders(pageSize: 2) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(5);
-        var orders = (System.Collections.IList)body!.orders;
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(5);
+        var orders = Anon.Prop<System.Collections.IList>(body, "orders");
         orders.Count.Should().Be(2);
     }
 

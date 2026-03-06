@@ -45,7 +45,7 @@ public class HrControllerTests : IDisposable
     {
         var result = await _ctrl.GetEmployee("EMP-001") as OkObjectResult;
         result.Should().NotBeNull();
-        ((EmpMstr)result!.Value!).EmpFname.Should().Be("Alice");
+        ((EmpMstr)result.Value!).EmpFname.Should().Be("Alice");
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class HrControllerTests : IDisposable
     public void GetEmployees_DefaultsToActiveOnly()
     {
         var result = _ctrl.GetEmployees(status: "A") as OkObjectResult;
-        var list   = (List<EmpMstr>)result!.Value!;
+        var list   = ((List<EmpMstr>)result.Value!);
         list.Should().HaveCount(2);
         list.Should().NotContain(e => e.EmpNbr == "EMP-003");
     }
@@ -69,7 +69,7 @@ public class HrControllerTests : IDisposable
     public void GetEmployees_FiltersByDept()
     {
         var result = _ctrl.GetEmployees(dept: "PROD", status: null) as OkObjectResult;
-        var list   = (List<EmpMstr>)result!.Value!;
+        var list   = ((List<EmpMstr>)result.Value!);
         list.Should().HaveCount(2); // both active and inactive in PROD
         list.Should().OnlyContain(e => e.EmpDept == "PROD");
     }
@@ -78,14 +78,14 @@ public class HrControllerTests : IDisposable
     public void GetEmployees_FiltersBySite()
     {
         var result = _ctrl.GetEmployees(site: "DEFAULT", status: "A") as OkObjectResult;
-        ((List<EmpMstr>)result!.Value!).Should().HaveCount(2);
+        ((List<EmpMstr>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
     public void GetEmployees_FiltersByStatusInactive()
     {
         var result = _ctrl.GetEmployees(status: "I") as OkObjectResult;
-        var list   = (List<EmpMstr>)result!.Value!;
+        var list   = ((List<EmpMstr>)result.Value!);
         list.Should().HaveCount(1);
         list.Single().EmpNbr.Should().Be("EMP-003");
     }
@@ -94,7 +94,7 @@ public class HrControllerTests : IDisposable
     public void GetEmployees_OrdersByLastNameThenFirstName()
     {
         var result = _ctrl.GetEmployees(status: "A") as OkObjectResult;
-        var list   = (List<EmpMstr>)result!.Value!;
+        var list   = ((List<EmpMstr>)result.Value!);
         list[0].EmpLname.Should().Be("Anderson");
         list[1].EmpLname.Should().Be("Baker");
     }
@@ -156,7 +156,7 @@ public class HrControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetEmployeeTime("EMP-001") as OkObjectResult;
-        ((List<EmpException>)result!.Value!).Should().HaveCount(2);
+        ((List<EmpException>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
@@ -169,14 +169,14 @@ public class HrControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetEmployeeTime("EMP-001", from: "2026-01-01") as OkObjectResult;
-        ((List<EmpException>)result!.Value!).Should().HaveCount(1);
+        ((List<EmpException>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
     public void GetEmployeeTime_NoExceptions_ReturnsEmpty()
     {
         var result = _ctrl.GetEmployeeTime("EMP-002") as OkObjectResult;
-        ((List<EmpException>)result!.Value!).Should().BeEmpty();
+        ((List<EmpException>)result.Value!).Should().BeEmpty();
     }
 
     private static void SetUser(ControllerBase ctrl, string username)
@@ -237,8 +237,8 @@ public class ProductionControllerTests : IDisposable
     {
         var result = _ctrl.GetWorkOrder(1001) as OkObjectResult;
         result.Should().NotBeNull();
-        var body = result!.Value as dynamic;
-        var ops  = (List<PlanOperation>)body!.operations;
+        var body = result!.Value;
+        var ops  = Anon.Prop<List<PlanOperation>>(body, "operations");
         ops.Should().HaveCount(2);
     }
 
@@ -254,24 +254,24 @@ public class ProductionControllerTests : IDisposable
     public void GetWorkOrders_FiltersByItem()
     {
         var result = _ctrl.GetWorkOrders(item: "WIDGET-100") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
     public void GetWorkOrders_FiltersByStatus()
     {
         var result = _ctrl.GetWorkOrders(status: "O") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
     public void GetWorkOrders_FiltersByStatus_Closed_ReturnsEmpty()
     {
         var result = _ctrl.GetWorkOrders(status: "C") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(0);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(0);
     }
 
     // ── CreateWorkOrder ────────────────────────────────────────────────────────

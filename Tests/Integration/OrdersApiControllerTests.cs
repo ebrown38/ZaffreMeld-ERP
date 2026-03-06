@@ -100,8 +100,8 @@ public class OrdersApiControllerTests : IDisposable
     {
         var result = await _ctrl.GetSalesOrder("SO-A001") as OkObjectResult;
         result.Should().NotBeNull();
-        var body = result!.Value as dynamic;
-        ((object)body!.header).Should().NotBeNull();
+        var body = result!.Value;
+        Anon.Prop<object>(body, "header").Should().NotBeNull();
     }
 
     [Fact]
@@ -117,48 +117,48 @@ public class OrdersApiControllerTests : IDisposable
     public async Task GetSalesOrders_NoFilter_ReturnsAll()
     {
         var result = await _ctrl.GetSalesOrders() as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(4);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(4);
     }
 
     [Fact]
     public async Task GetSalesOrders_FiltersByCustomer()
     {
         var result = await _ctrl.GetSalesOrders(cust: "ACME") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(2);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(2);
     }
 
     [Fact]
     public async Task GetSalesOrders_FiltersByStatus()
     {
         var result = await _ctrl.GetSalesOrders(status: "O") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(3);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(3);
     }
 
     [Fact]
     public async Task GetSalesOrders_FiltersBySite()
     {
         var result = await _ctrl.GetSalesOrders(site: "WEST") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
     public async Task GetSalesOrders_CombinesFilters()
     {
         var result = await _ctrl.GetSalesOrders(cust: "GLOBEX", status: "O") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(2);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(2);
     }
 
     [Fact]
     public async Task GetSalesOrders_OrdersByEntdateDescending()
     {
         var result = await _ctrl.GetSalesOrders() as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        var orders = (List<SoMstr>)body!.orders;
+        var body   = result!.Value;
+        var orders = Anon.Prop<List<SoMstr>>(body, "orders");
         string.Compare(orders[0].SoEntdate, orders[1].SoEntdate).Should().BeGreaterThanOrEqualTo(0);
     }
 
@@ -166,26 +166,26 @@ public class OrdersApiControllerTests : IDisposable
     public async Task GetSalesOrders_Pagination_RespectsPageSize()
     {
         var result = await _ctrl.GetSalesOrders(pageSize: 2) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(4);
-        ((List<SoMstr>)body!.orders).Should().HaveCount(2);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(4);
+        Anon.Prop<List<SoMstr>>(body, "orders").Should().HaveCount(2);
     }
 
     [Fact]
     public async Task GetSalesOrders_Page2_ReturnsCorrectSlice()
     {
         var result = await _ctrl.GetSalesOrders(page: 2, pageSize: 2) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((List<SoMstr>)body!.orders).Should().HaveCount(2);
+        var body   = result!.Value;
+        Anon.Prop<List<SoMstr>>(body, "orders").Should().HaveCount(2);
     }
 
     [Fact]
     public async Task GetSalesOrders_PageBeyondData_ReturnsEmpty()
     {
         var result = await _ctrl.GetSalesOrders(page: 99, pageSize: 10) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(4);
-        ((List<SoMstr>)body!.orders).Should().BeEmpty();
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(4);
+        Anon.Prop<List<SoMstr>>(body, "orders").Should().BeEmpty();
     }
 
     // ── CreateSalesOrder ───────────────────────────────────────────────────────
@@ -278,7 +278,7 @@ public class OrdersApiControllerTests : IDisposable
     public async Task SearchCustomers_ReturnsMatches()
     {
         var result = await _ctrl.SearchCustomers("ACME") as OkObjectResult;
-        ((List<CmMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<CmMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -317,14 +317,14 @@ public class OrdersApiControllerTests : IDisposable
     public void GetCustomerShipTos_ReturnsAllShipTos()
     {
         var result = _ctrl.GetCustomerShipTos("ACME") as OkObjectResult;
-        ((List<CmsDet>)result!.Value!).Should().HaveCount(2);
+        ((List<CmsDet>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
     public void GetCustomerShipTos_NoShipTos_ReturnsEmpty()
     {
         var result = _ctrl.GetCustomerShipTos("GLOBEX") as OkObjectResult;
-        ((List<CmsDet>)result!.Value!).Should().BeEmpty();
+        ((List<CmsDet>)result.Value!).Should().BeEmpty();
     }
 
     // ── Customer Xref ──────────────────────────────────────────────────────────
@@ -333,14 +333,14 @@ public class OrdersApiControllerTests : IDisposable
     public void GetCustomerXref_NoCustFilter_ReturnsAllForCust()
     {
         var result = _ctrl.GetCustomerXref("ACME") as OkObjectResult;
-        ((List<CupMstr>)result!.Value!).Should().HaveCount(2);
+        ((List<CupMstr>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
     public void GetCustomerXref_FiltersByItem_ReturnsSingleXref()
     {
         var result = _ctrl.GetCustomerXref("ACME", item: "WIDGET-100") as OkObjectResult;
-        var xrefs  = (List<CupMstr>)result!.Value!;
+        var xrefs  = ((List<CupMstr>)result.Value!);
         xrefs.Should().HaveCount(1);
         xrefs.Single().CupCitem.Should().Be("ACME-WDG");
     }
@@ -349,7 +349,7 @@ public class OrdersApiControllerTests : IDisposable
     public void GetCustomerXref_NoMatch_ReturnsEmpty()
     {
         var result = _ctrl.GetCustomerXref("GLOBEX") as OkObjectResult;
-        ((List<CupMstr>)result!.Value!).Should().BeEmpty();
+        ((List<CupMstr>)result.Value!).Should().BeEmpty();
     }
 
     // ── Terms ──────────────────────────────────────────────────────────────────
@@ -358,7 +358,7 @@ public class OrdersApiControllerTests : IDisposable
     public void GetTerms_ReturnsActiveTerms_OrderedByCode()
     {
         var result = _ctrl.GetTerms() as OkObjectResult;
-        var terms  = (List<CustTerm>)result!.Value!;
+        var terms  = ((List<CustTerm>)result.Value!);
         terms.Should().HaveCount(2);
         terms.Should().NotContain(t => t.CutCode == "OLD");
         terms[0].CutCode.Should().Be("NET30");
@@ -371,7 +371,7 @@ public class OrdersApiControllerTests : IDisposable
     public void GetSalespersons_ReturnsActiveOnly_OrderedByName()
     {
         var result = _ctrl.GetSalespersons() as OkObjectResult;
-        var slsps  = (List<SlspMstr>)result!.Value!;
+        var slsps  = ((List<SlspMstr>)result.Value!);
         slsps.Should().HaveCount(2);
         slsps.Should().NotContain(s => s.SlspId == "SP-OLD");
         slsps[0].SlspName.Should().Be("Alice Smith");
@@ -384,7 +384,7 @@ public class OrdersApiControllerTests : IDisposable
     public void GetPricing_NoPrices_ReturnsEmpty()
     {
         var result = _ctrl.GetPricing() as OkObjectResult;
-        ((List<CprMstr>)result!.Value!).Should().BeEmpty();
+        ((List<CprMstr>)result.Value!).Should().BeEmpty();
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public class OrdersApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetPricing(cust: "ACME") as OkObjectResult;
-        ((List<CprMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<CprMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class OrdersApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetPricing(cust: "ACME") as OkObjectResult;
-        ((List<CprMstr>)result!.Value!).Should().BeEmpty();
+        ((List<CprMstr>)result.Value!).Should().BeEmpty();
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

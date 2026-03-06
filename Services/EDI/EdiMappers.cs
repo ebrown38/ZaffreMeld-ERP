@@ -137,9 +137,10 @@ public static class Map850Inbound
                 if (!decimal.TryParse(po1[1], out var qty))   qty   = 1;
                 if (!decimal.TryParse(po1[3], out var price)) price = 0;
 
-                // PO1 qualifier pairs: PO107/PO108 = buyer item, PO109/PO110 = vendor item
+                // PO1 qualifier pairs: PO106/PO107 = buyer item, PO108/PO109 = vendor item
+                // Elements are 0-based after segment ID is stripped, so qualifiers start at index 5
                 var itemNum = string.Empty;
-                for (var i = 6; i < po1.Elements.Length - 1; i += 2)
+                for (var i = 5; i < po1.Elements.Length - 1; i += 2)
                 {
                     var qual = po1[i];
                     var val  = po1[i + 1];

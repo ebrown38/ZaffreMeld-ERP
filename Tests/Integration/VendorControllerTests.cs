@@ -40,7 +40,7 @@ public class VendorControllerTests : IDisposable
     {
         var result = _ctrl.GetVendor("ACME-SUPPLY") as OkObjectResult;
         result.Should().NotBeNull();
-        ((VdMstr)result!.Value!).VdName.Should().Be("Acme Supply Co");
+        ((VdMstr)result.Value!).VdName.Should().Be("Acme Supply Co");
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class VendorControllerTests : IDisposable
     public void SearchVendors_ByName_ReturnsMatch()
     {
         var result = _ctrl.SearchVendors("Acme") as OkObjectResult;
-        var list   = (List<VdMstr>)result!.Value!;
+        var list   = ((List<VdMstr>)result.Value!);
         list.Should().HaveCount(1);
         list.Single().VdAddr.Should().Be("ACME-SUPPLY");
     }
@@ -64,7 +64,7 @@ public class VendorControllerTests : IDisposable
     public void SearchVendors_ByCode_ReturnsMatch()
     {
         var result = _ctrl.SearchVendors("WIDGET") as OkObjectResult;
-        var list   = (List<VdMstr>)result!.Value!;
+        var list   = ((List<VdMstr>)result.Value!);
         list.Should().HaveCount(1);
     }
 
@@ -73,7 +73,7 @@ public class VendorControllerTests : IDisposable
     {
         // SearchVendors filters on VdStatus == "A"
         var result = _ctrl.SearchVendors("") as OkObjectResult;
-        var list   = (List<VdMstr>)result!.Value!;
+        var list   = ((List<VdMstr>)result.Value!);
         list.Should().NotContain(v => v.VdAddr == "INACTIVE-VEND");
     }
 
@@ -81,14 +81,14 @@ public class VendorControllerTests : IDisposable
     public void SearchVendors_NoMatch_ReturnsEmpty()
     {
         var result = _ctrl.SearchVendors("ZZNOTFOUND") as OkObjectResult;
-        ((List<VdMstr>)result!.Value!).Should().BeEmpty();
+        ((List<VdMstr>)result.Value!).Should().BeEmpty();
     }
 
     [Fact]
     public void SearchVendors_RespectsMaxResults()
     {
         var result = _ctrl.SearchVendors("", max: 1) as OkObjectResult;
-        ((List<VdMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<VdMstr>)result.Value!).Should().HaveCount(1);
     }
 
     // ── AddVendor ──────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorPricing("ACME-SUPPLY") as OkObjectResult;
-        ((List<VprMstr>)result!.Value!).Should().HaveCount(2);
+        ((List<VprMstr>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorPricing("ACME-SUPPLY", item: "WIDGET-100") as OkObjectResult;
-        ((List<VprMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<VprMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -180,14 +180,14 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorPricing("ACME-SUPPLY") as OkObjectResult;
-        ((List<VprMstr>)result!.Value!).Should().BeEmpty();
+        ((List<VprMstr>)result.Value!).Should().BeEmpty();
     }
 
     [Fact]
     public void GetVendorPricing_NoPrices_ReturnsEmpty()
     {
         var result = _ctrl.GetVendorPricing("WIDGET-WORLD") as OkObjectResult;
-        ((List<VprMstr>)result!.Value!).Should().BeEmpty();
+        ((List<VprMstr>)result.Value!).Should().BeEmpty();
     }
 
     // ── GetVendorXref ──────────────────────────────────────────────────────────
@@ -199,7 +199,7 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorXref("ACME-SUPPLY") as OkObjectResult;
-        ((List<VdpMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<VdpMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorXref("ACME-SUPPLY") as OkObjectResult;
-        ((List<VdpMstr>)result!.Value!).Should().BeEmpty();
+        ((List<VdpMstr>)result.Value!).Should().BeEmpty();
     }
 
     // ── GetVendorShipTos ───────────────────────────────────────────────────────
@@ -221,14 +221,14 @@ public class VendorControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetVendorShipTos("ACME-SUPPLY") as OkObjectResult;
-        ((List<VdsDet>)result!.Value!).Should().HaveCount(1);
+        ((List<VdsDet>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
     public void GetVendorShipTos_NoShipTos_ReturnsEmpty()
     {
         var result = _ctrl.GetVendorShipTos("WIDGET-WORLD") as OkObjectResult;
-        ((List<VdsDet>)result!.Value!).Should().BeEmpty();
+        ((List<VdsDet>)result.Value!).Should().BeEmpty();
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

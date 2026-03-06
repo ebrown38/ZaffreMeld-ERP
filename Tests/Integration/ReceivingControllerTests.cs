@@ -216,8 +216,8 @@ public class ReceivingControllerTests : IDisposable
         await _ctrl.CreateReceiver(BuildReceiverRequest("RV-V2", vend: "VENDOR-B"));
 
         var result = _ctrl.GetReceivers(vend: "VENDOR-A") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
@@ -226,8 +226,8 @@ public class ReceivingControllerTests : IDisposable
         await _ctrl.CreateReceiver(BuildReceiverRequest("RV-SITE1"));
 
         var result = _ctrl.GetReceivers(site: "DEFAULT") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().BeGreaterThan(0);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().BeGreaterThan(0);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

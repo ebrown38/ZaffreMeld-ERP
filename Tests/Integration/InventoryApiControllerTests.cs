@@ -97,7 +97,7 @@ public class InventoryApiControllerTests : IDisposable
     public async Task SearchItems_ReturnsMatchingItems()
     {
         var result = await _ctrl.SearchItems("WIDGET") as OkObjectResult;
-        ((List<ItemMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<ItemMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -207,11 +207,11 @@ public class InventoryApiControllerTests : IDisposable
     public async Task GetQoh_ReturnsQohAndMetadata()
     {
         var result = await _ctrl.GetQoh("WIDGET-100", "DEFAULT") as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
 
-        ((string)body!.item).Should().Be("WIDGET-100");
-        ((string)body!.site).Should().Be("DEFAULT");
-        ((decimal)body!.qoh).Should().Be(100m);
+        Anon.Prop<string>(body, "item").Should().Be("WIDGET-100");
+        Anon.Prop<string>(body, "site").Should().Be("DEFAULT");
+        Anon.Prop<decimal>(body, "qoh").Should().Be(100m);
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class InventoryApiControllerTests : IDisposable
     {
         _svcMock.Setup(s => s.GetItemQoh("GHOST", "DEFAULT")).ReturnsAsync(0m);
         var result = await _ctrl.GetQoh("GHOST", "DEFAULT") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((decimal)body!.qoh).Should().Be(0m);
+        var body   = result!.Value;
+        Anon.Prop<decimal>(body, "qoh").Should().Be(0m);
     }
 
     // ── BOM ────────────────────────────────────────────────────────────────────
@@ -241,7 +241,7 @@ public class InventoryApiControllerTests : IDisposable
     public void GetBomStructure_ReturnsComponents_OrderedBySeq()
     {
         var result = _ctrl.GetBomStructure("GADGET-200") as OkObjectResult;
-        var comps  = (List<PbmMstr>)result!.Value!;
+        var comps  = ((List<PbmMstr>)result.Value!);
         comps.Should().HaveCount(2);
         comps[0].PsSeq.Should().Be(10);
         comps[1].PsSeq.Should().Be(20);
@@ -254,14 +254,14 @@ public class InventoryApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetBomStructure("GADGET-200") as OkObjectResult;
-        ((List<PbmMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<PbmMstr>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
     public void GetBomStructure_NoComponents_ReturnsEmpty()
     {
         var result = _ctrl.GetBomStructure("WIDGET-100") as OkObjectResult;
-        ((List<PbmMstr>)result!.Value!).Should().BeEmpty();
+        ((List<PbmMstr>)result.Value!).Should().BeEmpty();
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class InventoryApiControllerTests : IDisposable
     {
         // WIDGET-100 is used in GADGET-200
         var result = _ctrl.GetWhereUsed("WIDGET-100") as OkObjectResult;
-        var parents = (List<PbmMstr>)result!.Value!;
+        var parents = ((List<PbmMstr>)result.Value!);
         parents.Should().HaveCount(1);
         parents.Single().PsParent.Should().Be("GADGET-200");
     }
@@ -278,7 +278,7 @@ public class InventoryApiControllerTests : IDisposable
     public void GetWhereUsed_NotUsedAnywhere_ReturnsEmpty()
     {
         var result = _ctrl.GetWhereUsed("GADGET-200") as OkObjectResult;
-        ((List<PbmMstr>)result!.Value!).Should().BeEmpty();
+        ((List<PbmMstr>)result.Value!).Should().BeEmpty();
     }
 
     // ── Work Centers ───────────────────────────────────────────────────────────
@@ -287,7 +287,7 @@ public class InventoryApiControllerTests : IDisposable
     public void GetWorkCenters_ReturnsActiveOnly()
     {
         var result = _ctrl.GetWorkCenters() as OkObjectResult;
-        var wcs    = (List<WcMstr>)result!.Value!;
+        var wcs    = ((List<WcMstr>)result.Value!);
         wcs.Should().HaveCount(2);
         wcs.Should().NotContain(w => w.WcCell == "CELL-OFF");
     }
@@ -299,7 +299,7 @@ public class InventoryApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetWorkCenters(site: "WEST") as OkObjectResult;
-        ((List<WcMstr>)result!.Value!).Should().OnlyContain(w => w.WcSite == "WEST");
+        ((List<WcMstr>)result.Value!).Should().OnlyContain(w => w.WcSite == "WEST");
     }
 
     [Fact]
@@ -320,7 +320,7 @@ public class InventoryApiControllerTests : IDisposable
     public void GetWarehouses_ReturnsActiveOnly()
     {
         var result = _ctrl.GetWarehouses() as OkObjectResult;
-        var whs    = (List<WhMstr>)result!.Value!;
+        var whs    = ((List<WhMstr>)result.Value!);
         whs.Should().HaveCount(2);
         whs.Should().NotContain(w => w.WhId == "WH-OLD");
     }
@@ -332,7 +332,7 @@ public class InventoryApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetWarehouses(site: "DEFAULT") as OkObjectResult;
-        ((List<WhMstr>)result!.Value!).Should().OnlyContain(w => w.WhSite == "DEFAULT");
+        ((List<WhMstr>)result.Value!).Should().OnlyContain(w => w.WhSite == "DEFAULT");
     }
 
     // ── Locations ──────────────────────────────────────────────────────────────
@@ -344,21 +344,21 @@ public class InventoryApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetLocations() as OkObjectResult;
-        ((List<LocMstr>)result!.Value!).Should().NotContain(l => l.LocLoc == "DEAD");
+        ((List<LocMstr>)result.Value!).Should().NotContain(l => l.LocLoc == "DEAD");
     }
 
     [Fact]
     public void GetLocations_FiltersByWarehouse()
     {
         var result = _ctrl.GetLocations(wh: "WH-01") as OkObjectResult;
-        ((List<LocMstr>)result!.Value!).Should().OnlyContain(l => l.LocWh == "WH-01");
+        ((List<LocMstr>)result.Value!).Should().OnlyContain(l => l.LocWh == "WH-01");
     }
 
     [Fact]
     public void GetLocations_FiltersBySite()
     {
         var result = _ctrl.GetLocations(site: "DEFAULT") as OkObjectResult;
-        ((List<LocMstr>)result!.Value!).Should().OnlyContain(l => l.LocSite == "DEFAULT");
+        ((List<LocMstr>)result.Value!).Should().OnlyContain(l => l.LocSite == "DEFAULT");
     }
 
     // ── UOM ────────────────────────────────────────────────────────────────────
@@ -370,7 +370,7 @@ public class InventoryApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetUom() as OkObjectResult;
-        ((List<UomMstr>)result!.Value!).Should().NotContain(u => u.UomId == "BX");
+        ((List<UomMstr>)result.Value!).Should().NotContain(u => u.UomId == "BX");
     }
 
     [Fact]
@@ -378,8 +378,8 @@ public class InventoryApiControllerTests : IDisposable
     {
         // 24 EA ÷ 1 = 24; then ÷ 12 (DZ factor) = 2 dozen
         var result = await _ctrl.ConvertUom("EA", "DZ", 24m) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((decimal)body!.convertedQty).Should().BeApproximately(2m, 0.001m);
+        var body   = result!.Value;
+        Anon.Prop<decimal>(body, "convertedQty").Should().BeApproximately(2m, 0.001m);
     }
 
     [Fact]
@@ -387,16 +387,16 @@ public class InventoryApiControllerTests : IDisposable
     {
         // 48 EA → cases of 24 = 2 cases
         var result = await _ctrl.ConvertUom("EA", "CS", 48m) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((decimal)body!.convertedQty).Should().BeApproximately(2m, 0.001m);
+        var body   = result!.Value;
+        Anon.Prop<decimal>(body, "convertedQty").Should().BeApproximately(2m, 0.001m);
     }
 
     [Fact]
     public async Task ConvertUom_SameUom_ReturnsSameQty()
     {
         var result = await _ctrl.ConvertUom("EA", "EA", 10m) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((decimal)body!.convertedQty).Should().Be(10m);
+        var body   = result!.Value;
+        Anon.Prop<decimal>(body, "convertedQty").Should().Be(10m);
     }
 
     [Fact]
@@ -417,9 +417,9 @@ public class InventoryApiControllerTests : IDisposable
     public void BrowseItems_DefaultsToActiveStatus()
     {
         var result = _ctrl.BrowseItems() as OkObjectResult;
-        var body   = result!.Value as dynamic;
+        var body   = result!.Value;
         // Seeded: 2 active items, 1 inactive
-        ((int)body!.total).Should().Be(2);
+        Anon.Prop<int>(body, "total").Should().Be(2);
     }
 
     [Fact]
@@ -427,27 +427,27 @@ public class InventoryApiControllerTests : IDisposable
     {
         // All seeded items are type "P" (Purchase)
         var result = _ctrl.BrowseItems(type: "P", status: null) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(3);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(3);
     }
 
     [Fact]
     public void BrowseItems_NullStatus_ReturnsAll()
     {
         var result = _ctrl.BrowseItems(status: null) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(3);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(3);
     }
 
     [Fact]
     public void BrowseItems_Pagination_RespectsPageSize()
     {
         var result = _ctrl.BrowseItems(status: null, pageSize: 2) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(3);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(3);
 
         // page contains only 2
-        var items = (System.Collections.IList)body!.items;
+        var items = Anon.Prop<System.Collections.IList>(body, "items");
         items.Count.Should().Be(2);
     }
 
@@ -455,8 +455,8 @@ public class InventoryApiControllerTests : IDisposable
     public void BrowseItems_Page2_ReturnsRemainingItem()
     {
         var result = _ctrl.BrowseItems(status: null, page: 2, pageSize: 2) as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((System.Collections.IList)body!.items).Count.Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<System.Collections.IList>(body, "items").Count.Should().Be(1);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

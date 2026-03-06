@@ -192,8 +192,8 @@ public class ShippingControllerTests : IDisposable
         await _ctrl.CreateShipper(BuildShipperRequest("SH-C2", cust: "GLOBEX"));
 
         var result = _ctrl.GetShippers(cust: "ACME") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class ShippingControllerTests : IDisposable
         await _ctrl.CreateShipper(BuildShipperRequest("SH-S2"));
 
         var result = _ctrl.GetShippers(status: "O") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((int)body!.total).Should().Be(1);
+        var body   = result!.Value;
+        Anon.Prop<int>(body, "total").Should().Be(1);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

@@ -74,7 +74,7 @@ public class FinanceApiControllerTests : IDisposable
     public async Task GetAccounts_DefaultRange_ReturnsAll()
     {
         var result = await _ctrl.GetAccounts() as OkObjectResult;
-        ((List<AcctMstr>)result!.Value!).Should().HaveCount(5);
+        ((List<AcctMstr>)result.Value!).Should().HaveCount(5);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class FinanceApiControllerTests : IDisposable
             .ReturnsAsync(new List<GlTran> { new GlTran { GltAcct = "4000", GltAmt = 1000m } });
 
         var result = await _ctrl.GetGlTran("4000") as OkObjectResult;
-        ((List<GlTran>)result!.Value!).Should().HaveCount(1);
+        ((List<GlTran>)result.Value!).Should().HaveCount(1);
     }
 
     [Fact]
@@ -194,19 +194,19 @@ public class FinanceApiControllerTests : IDisposable
     public async Task GetAccountBalance_ReturnsBalance()
     {
         var result = await _ctrl.GetAccountBalance("4000", "CC1", "2026", "03") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((decimal)body!.balance).Should().Be(1500m);
+        var body   = result!.Value;
+        Anon.Prop<decimal>(body, "balance").Should().Be(1500m);
     }
 
     [Fact]
     public async Task GetAccountBalance_ResponseIncludesAllParams()
     {
         var result = await _ctrl.GetAccountBalance("4000", "CC1", "2026", "03") as OkObjectResult;
-        var body   = result!.Value as dynamic;
-        ((string)body!.account).Should().Be("4000");
-        ((string)body!.cc).Should().Be("CC1");
-        ((string)body!.year).Should().Be("2026");
-        ((string)body!.period).Should().Be("03");
+        var body   = result!.Value;
+        Anon.Prop<string>(body, "account").Should().Be("4000");
+        Anon.Prop<string>(body, "cc").Should().Be("CC1");
+        Anon.Prop<string>(body, "year").Should().Be("2026");
+        Anon.Prop<string>(body, "period").Should().Be("03");
     }
 
     // ── Banks ──────────────────────────────────────────────────────────────────
@@ -236,7 +236,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetBanks() as OkObjectResult;
-        ((List<BankMstr>)result!.Value!).Should().OnlyContain(b => b.CbActive);
+        ((List<BankMstr>)result.Value!).Should().OnlyContain(b => b.CbActive);
     }
 
     // ── Currencies ─────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetCurrencies() as OkObjectResult;
-        ((List<CurrMstr>)result!.Value!).Should().HaveCount(2);
+        ((List<CurrMstr>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetExchangeRates("USD") as OkObjectResult;
-        var rates  = (List<ExcMstr>)result!.Value!;
+        var rates  = ((List<ExcMstr>)result.Value!);
         rates.Should().HaveCount(2);
         rates.Should().OnlyContain(r => r.ExcBase == "USD");
     }
@@ -314,7 +314,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetArLines("INV-002") as OkObjectResult;
-        ((List<ArdMstr>)result!.Value!).Should().HaveCount(2);
+        ((List<ArdMstr>)result.Value!).Should().HaveCount(2);
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetArAging("DEFAULT") as OkObjectResult;
-        var ar     = (List<ArMstr>)result!.Value!;
+        var ar     = ((List<ArMstr>)result.Value!);
         ar.Should().HaveCount(1);
         ar.Single().ArId.Should().Be("INV-A");
     }
@@ -343,7 +343,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetArAging("DEFAULT", cust: "ACME") as OkObjectResult;
-        ((List<ArMstr>)result!.Value!).Should().OnlyContain(a => a.ArCust == "ACME");
+        ((List<ArMstr>)result.Value!).Should().OnlyContain(a => a.ArCust == "ACME");
     }
 
     // ── AP ─────────────────────────────────────────────────────────────────────
@@ -373,7 +373,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetApAging("DEFAULT") as OkObjectResult;
-        ((List<ApMstr>)result!.Value!).Should().HaveCount(1);
+        ((List<ApMstr>)result.Value!).Should().HaveCount(1);
     }
 
     // ── Departments ────────────────────────────────────────────────────────────
@@ -403,7 +403,7 @@ public class FinanceApiControllerTests : IDisposable
         _db.SaveChanges();
 
         var result = _ctrl.GetDepartments() as OkObjectResult;
-        ((List<DeptMstr>)result!.Value!).Should().OnlyContain(d => d.DeptActive);
+        ((List<DeptMstr>)result.Value!).Should().OnlyContain(d => d.DeptActive);
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

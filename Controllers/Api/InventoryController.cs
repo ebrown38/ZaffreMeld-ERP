@@ -89,7 +89,11 @@ public class InventoryController : ControllerBase
     {
         var existing = await _svc.GetItemCost(cost.ItcItem, cost.ItcSite, cost.ItcSet);
         if (existing == null)
+        {
+            cost.ItcTotalcost = cost.ItcMatcost + cost.ItcLabcost + cost.ItcOvhcost + cost.ItcBurdcost;
+            cost.ItcEffdate   = DateTime.Today.ToString("yyyy-MM-dd");
             _db.ItemCost.Add(cost);
+        }
         else
         {
             existing.ItcMatcost = cost.ItcMatcost;
