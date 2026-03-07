@@ -180,7 +180,6 @@ public class ZaffreMeldDbContext : IdentityDbContext<ZaffreMeldUser, ZaffreMeldR
         modelBuilder.Entity<EdiDocdet>().HasKey(x => new { x.EdidId, x.EdidRole, x.EdidRectype });
         modelBuilder.Entity<EcnTask>().HasKey(x => new { x.EcntNbr, x.EcntMstrid });
         modelBuilder.Entity<FtpAttr>().HasKey(x => new { x.FtpaId, x.FtpaKey });
-        modelBuilder.Entity<CodeMstr>().HasKey(x => new { x.CodeCode, x.CodeKey });
         modelBuilder.Entity<CupMstr>().HasKey(x => new { x.CupCust, x.CupItem });
         modelBuilder.Entity<VdpMstr>().HasKey(x => new { x.VdpVend, x.VdpItem });
 

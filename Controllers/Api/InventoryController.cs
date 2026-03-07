@@ -89,7 +89,11 @@ public class InventoryController : ControllerBase
     {
         var existing = await _svc.GetItemCost(cost.ItcItem, cost.ItcSite, cost.ItcSet);
         if (existing == null)
+        {
+            cost.ItcTotalcost = cost.ItcMatcost + cost.ItcLabcost + cost.ItcOvhcost + cost.ItcBurdcost;
+            cost.ItcEffdate   = DateTime.Today.ToString("yyyy-MM-dd");
             _db.ItemCost.Add(cost);
+        }
         else
         {
             existing.ItcMatcost = cost.ItcMatcost;
@@ -190,7 +194,7 @@ public class InventoryController : ControllerBase
     {
         var fromUom = await _db.UomMstr.FindAsync(id);
         var targetUom = await _db.UomMstr.FindAsync(toUom);
-        if (fromUom == null || targetUom == null) return NotFound("UOM not found.");
+        if (fromUom == null || targetUom == null) return NotFound();
 
         var convertedQty = qty * fromUom.UomConvFactor / targetUom.UomConvFactor;
         return Ok(new { fromUom = id, toUom, originalQty = qty, convertedQty });

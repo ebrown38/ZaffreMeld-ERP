@@ -40,7 +40,7 @@ public class AdministrationController : ControllerBase
     [HttpGet("sites/{id}")]
     public IActionResult GetSite(string id)
     {
-        var site = _db.Sites.Find(id);
+        var site = _db.Sites.FirstOrDefault(s => s.SiteSite == id);
         return site == null ? NotFound() : Ok(site);
     }
 
@@ -55,7 +55,19 @@ public class AdministrationController : ControllerBase
     [HttpPut("sites/{id}")]
     public async Task<IActionResult> UpdateSite(string id, [FromBody] SiteMstr site)
     {
-        _db.Sites.Update(site);
+        var existing = _db.Sites.FirstOrDefault(s => s.SiteSite == id);
+        if (existing == null) return NotFound();
+        existing.SiteDesc     = site.SiteDesc;
+        existing.SiteLine1    = site.SiteLine1;
+        existing.SiteLine2    = site.SiteLine2;
+        existing.SiteCity     = site.SiteCity;
+        existing.SiteState    = site.SiteState;
+        existing.SiteZip      = site.SiteZip;
+        existing.SiteCountry  = site.SiteCountry;
+        existing.SitePhone    = site.SitePhone;
+        existing.SiteFax      = site.SiteFax;
+        existing.SiteCurrency = site.SiteCurrency;
+        existing.SiteActive   = site.SiteActive;
         await _db.SaveChangesAsync();
         return Ok(new { success = true });
     }
@@ -75,7 +87,7 @@ public class AdministrationController : ControllerBase
     [AllowAnonymous]
     public IActionResult GetCode(string code, string key)
     {
-        var cm = _db.CodeMstr.Find(code, key);
+        var cm = _db.CodeMstr.FirstOrDefault(c => c.CodeCode == code && c.CodeKey == key);
         return cm == null ? NotFound() : Ok(cm);
     }
 
@@ -90,7 +102,7 @@ public class AdministrationController : ControllerBase
     [HttpDelete("codes/{code}/{key}")]
     public async Task<IActionResult> DeleteCode(string code, string key)
     {
-        var cm = _db.CodeMstr.Find(code, key);
+        var cm = _db.CodeMstr.FirstOrDefault(c => c.CodeCode == code && c.CodeKey == key);
         if (cm == null) return NotFound();
         _db.CodeMstr.Remove(cm);
         await _db.SaveChangesAsync();
@@ -325,7 +337,9 @@ public class ProductionController : ControllerBase
         var jc = await _db.JobClocks.FindAsync(clockId);
         if (jc == null) return NotFound();
 
-        jc.JobcTimeout = DateTime.Now.ToString("HH:mm:ss");
+        jc.JobcTimeout = string.IsNullOrEmpty(jc.JobcTimeout)
+            ? DateTime.Now.ToString("HH:mm:ss")
+            : jc.JobcTimeout;
         jc.JobcQty = req.Qty;
 
         // Calculate hours

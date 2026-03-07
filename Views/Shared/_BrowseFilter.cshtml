@@ -1,1 +1,13 @@
 @* Reusable search bar partial — used by all list views *@
+@* Usage: @await Html.PartialAsync("_BrowseFilter", new { action = "Index", placeholder = "Search..." }) *@
+<div class="card mb-3"><div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+        @RenderSection("FilterFields", required: false)
+        <div class="col-auto ms-auto">
+            <button class="btn btn-sm btn-outline-primary" type="submit">
+                <i class="bi bi-search me-1"></i>Search
+            </button>
+            <a href="@Url.Action()" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+        </div>
+    </form>
+</div></div>
